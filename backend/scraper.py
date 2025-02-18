@@ -1,6 +1,4 @@
 import requests
-from models import Scraped_raw
-from config import db
 from bs4 import BeautifulSoup
 from flask import jsonify
 
