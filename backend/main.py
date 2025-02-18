@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from view import view
+# from view import view
 from scraper import scrape_website
 from file_handler import save_data, get_txt_file, save_json
 
 app = Flask(__name__)
 CORS(app)
-app.register_blueprint(view)
+# app.register_blueprint(view)
 
 
 @app.route("/scrape", methods=["POST"])
