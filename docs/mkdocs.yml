@@ -1,4 +1,4 @@
-site_name: Web Scraping Project
+site_name: Web Sraping Project Documentation
 theme:
   name: material
   features:
@@ -15,16 +15,22 @@ theme:
   palette:
     - scheme: default
       toggle:
-        icon: material/toggle-switch-off-outline 
+        icon: material/toggle-switch-off-outline
         name: Switch to dark mode
       primary: teal
-      accent: purple 
-    - scheme: slate 
+      accent: purple
+    - scheme: slate
       toggle:
         icon: material/toggle-switch
-        name: Switch to light mode    
+        name: Switch to light mode
       primary: teal
       accent: lime
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/AliRasikh/data-scraping-application
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
@@ -41,3 +47,6 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+
+copyright: |
+  &copy; 2025 <a href="https://github.com/AliRasikh/data-scraping-application"  target="_blank" rel="noopener">Hochschule Augsburg & LNU Student Team project</a>
