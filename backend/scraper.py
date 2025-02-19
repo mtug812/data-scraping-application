@@ -1,8 +1,9 @@
 import requests
+from flask import jsonify
 from bs4 import BeautifulSoup
 
 
-def scrape_website(url: str):
+def scrape_with_bs4(url: str):
     """
     Scrapes the content of the given URL and returns the prettified HTML.
 
@@ -14,12 +15,15 @@ def scrape_website(url: str):
     """
     try:
         # send an http get request to the url
-        response = requests.get(url, timeout=5)
+        response = requests.get(url, timeout=10)
+        print("Scraping URL eith bs4...")
 
         # Check if the response was successful (status code 200).
         if response.status_code != 200:
-            return f"""Error: Unable to fetch URL.
-            Status code:{response.status_code}"""
+            return (
+                jsonify({"status": "failure", "error": "Failed to retrieve content"}),
+                400,
+            )
 
         # parse the html content using beautifullsp
         soup = BeautifulSoup(response.text, 'html.parser')
