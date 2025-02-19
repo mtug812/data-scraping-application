@@ -6,7 +6,7 @@ from file_handler import raw_html_to_txt_file, get_txt_file
 
 raw_html: object = None
 
-
+# smth to change
 @app.route("/scrape_with_bs4", methods=["POST"])
 def scrape():
     """
