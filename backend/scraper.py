@@ -1,6 +1,6 @@
 import requests
-from bs4 import BeautifulSoup
 from flask import jsonify
+from bs4 import BeautifulSoup
 
 
 def scrape_with_bs4(url: str):

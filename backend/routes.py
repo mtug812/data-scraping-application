@@ -1,7 +1,6 @@
 from flask import request, jsonify
-
 # from models import Url
-from backend.scraper import scrape_with_bs4
+from scraper import scrape_with_bs4
 from config import app
 from file_handler import raw_html_to_txt_file
 
@@ -12,7 +11,8 @@ raw_html: object = None
 def post_url():
     data: object = request.json
     url: str = data.get("url")
-    # prompt: str = data.get("prompt" : "Clean the HTML content") # default prompt
+    # prompt: str = data.get("prompt" : "Clean the HTML content")
+    # default prompt
 
     if not url:
         return jsonify({"error": "URL is required"}), 400
