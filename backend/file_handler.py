@@ -27,3 +27,10 @@ def get_txt_file():
             download_name="scraped_raw_data.txt"
         )
     return jsonify({"error": "No scraped data available"}), 404
+
+# # store the raw scraped data to a file
+# def raw_html_to_txt_file(prettified_data):
+#     with open("scraped.txt", "w") as file:  # w overwrites the existing file
+#         file.write(str(prettified_data))
+#         print("Raw Scraped data saved to scraped.txt")
+

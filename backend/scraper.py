@@ -34,3 +34,17 @@ def scrape_with_bs4(url: str):
     except requests.exceptions.RequestException as e:
         # If an error occurs, return a message with the error details.
         return f"An error occurred: {e}"
+
+
+# store the raw scraped data to the database as a BLOB
+# def raw_html_to_db(pretofied_data):
+#     raw_scraped_data = Scraped_raw(scraped_raw_data=pretofied_data)
+#     try:
+#         db.session.add(raw_scraped_data)
+#         db.session.commit()
+#         print("Raw Scraped data saved to database")
+#     except Exception as e:
+#         print(f"Error saving to database: {str(e)}")
+
+
+# send the raw scraped data to AI for cleaning

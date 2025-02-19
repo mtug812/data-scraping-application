@@ -6,7 +6,7 @@ from file_handler import raw_html_to_txt_file, get_txt_file
 
 raw_html: object = None
 
-# smth to change
+
 @app.route("/scrape_with_bs4", methods=["POST"])
 def scrape():
     """
@@ -38,3 +38,36 @@ def scrape():
 def download_txt():
     raw_html_to_txt_file(raw_html)
     return get_txt_file()
+
+
+# def url_to_db(url):
+#     url: str = Url(url=url)
+#     try:
+#         db.session.add(url)
+#         db.session.commit()
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 400
+
+#     return jsonify({"message": "URL stored successfully to database"}), 201
+
+
+# @app.route("/api/urls", methods=["GET"])
+# def get_urls():
+#     urls = Url.query.all()
+#     json_urls = [url.to_json() for url in urls]
+
+#     return jsonify(json_urls)
+
+
+# @app.route("/api/remove_url/<int:id>", methods=["DELETE"])
+# def remove_url(id: int):
+#     url = Url.query.get(id)
+
+#     if not url:
+#         return jsonify({"error": "URL not found"}), 404
+
+#     db.session.delete(url)
+#     db.session.commit()
+
+#     return jsonify({"message": "URL removed successfully"})
+
