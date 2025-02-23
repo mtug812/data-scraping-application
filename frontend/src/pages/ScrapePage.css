@@ -1,0 +1,9 @@
+h1 {
+    color: red
+}
+
+.inputContainer {
+    background: gray;
+    display: flex;
+    justify-content: center;
+}
