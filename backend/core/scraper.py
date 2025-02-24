@@ -26,21 +26,20 @@ def scrape_with_requests(url: str):
         # send an http get request to the url
         response = requests.get(url, timeout=10)
         print("Scraping URL with requests...")
+       
 
         # Check if the response was successful (status code 200).
         if response.status_code != 200:
-            return (
-                jsonify(
-                    {"status": "failure", "error": "Failed to retrieve URL content"}
-                ),
-                400,
-            )
-
+            print(f"Error: Failed with status {response.status_code}")  # AICI
+            return {"status": "failure", "error": f"Failed to retrieve URL content, status code: {response.status_code}"}
+ 
+        
         # Return the entire HTML content.
         return response.text
 
     except requests.exceptions.RequestException as e:
         # If an error occurs, return a message with the error details.
+        print(f"Request failed: {e}")  # AICI S-A MODIFICAT
         return {"status": "failure", "error": f"An error occurred: {e}"}
 
 

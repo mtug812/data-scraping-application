@@ -14,6 +14,8 @@ def scraped_data_to_txt_file(raw_html) -> None:
     Returns:
         None
     """
+    print(f"Writing to file: {type(raw_html)}")  # Afișează tipul de date
+    print(f"First 200 chars: {raw_html[:200]}")  # Afișează un preview
     with open(DATA_FILE_TXT, "w", encoding="utf-8") as file:
         file.write(raw_html)
 

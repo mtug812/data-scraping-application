@@ -18,7 +18,7 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 
@@ -29,7 +29,7 @@ CORS(app)
 load_dotenv()
 
 # Database configuration
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+#app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
+#app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)  # create a database instance
+#db = SQLAlchemy(app)  # create a database instance

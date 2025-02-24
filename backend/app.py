@@ -9,7 +9,7 @@ Endpoints:
 
 """
 
-from config import app, db
+from config import app #, db
 from flask import request, jsonify
 
 from core.scraper import scrape_with_bs4, scrape_with_requests
@@ -24,8 +24,11 @@ def scrape():
     """
     # retrieve the json data from the post request
     data = request.json
+    print("received data:", data)
     url = data.get("url")
     scraping_method = data.get("scraping_method")
+    print(f"Received URL: {url}, Scraping Method: {scraping_method}")
+
 
     # if no url is provides , return an error with http 400 status(bad request)
     if not url:
@@ -42,7 +45,17 @@ def scrape():
     else:
         return jsonify({"error": "Invalid scraping method"}), 400
 
+    # AICI S-A MODIFICAT:
+    # Verificăm dacă `raw_html` este un dicționar cu eroare și returnăm răspunsul JSON
+    # if isinstance(raw_html, dict) and "error" in raw_html:
+    #     return jsonify(raw_html), 400  # Return JSON error response with status 400
+    
+    # print(f"Saving to file: {type(raw_html)}")  # Afișează tipul de date al `raw_html`
+    # if isinstance(raw_html, dict):
+    #     print(f"Dictionary content: {raw_html}")  # Afișează conținutul dacă e `dict`
+
     scraped_data_to_txt_file(raw_html)
+
 
     return (
         jsonify(
@@ -71,7 +84,7 @@ def download_txt():
 
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()
+       # db.create_all()
 
         app.run(debug=True)
 
