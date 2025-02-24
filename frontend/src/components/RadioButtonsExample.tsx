@@ -15,17 +15,20 @@ const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) =>
   };
 
   return (
-    <div style={{background:"gray",padding:"10px",borderRadius:"10px"}}>
-      <h3>Selectează o opțiune:</h3>
+
+  
+    <div className="scrapeOptionsContainer w-full max-w-md text-left">
+      <h3 className="font-bold mb-2">Select scraping options:</h3>
+    
       <label>
         <input
           type="radio"
           name="options"
-          value="scrape1"
-          checked={getter === "scrape1"}
+          value="requests"
+          checked={getter === "requests"}
           onChange={handleOptionChange}
         />
-        hallo
+        Requests
       </label>
       <br />
 
@@ -33,11 +36,11 @@ const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) =>
         <input
           type="radio"
           name="options"
-          value="scrape2"
-          checked={getter === "scrape2"}
+          value="bs4"
+          checked={getter === "bs4"}
           onChange={handleOptionChange}
         />
-        B
+        Beautiful Soup
       </label>
       <br />
 
@@ -45,15 +48,15 @@ const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) =>
         <input
           type="radio"
           name="options"
-          value="scrape3"
-          checked={getter === "scrape3"}
+          value="selenium"
+          checked={getter === "selenium"}
           onChange={handleOptionChange}
         />
-        C
+        Selenium - dynamic websites
       </label>
-      
-      <p>Opțiunea selectată este: {getter.toUpperCase()}</p>
     </div>
+    
+    
   );
 };
 

@@ -15,7 +15,7 @@ const ScrapePage: React.FC = () => {
   const handleScrape = async () => {
     console.log(selectedOption);
      
-    setError(''); // Resetăm eroarea înainte de a începe un nou "scrape"
+    setError(''); //setzt die Fehlermeldung zurück, wenn vorher ein Fehler aufgetreten ist, verschwindet dieser.
     // TODO: Aici va fi implementată logica de fetch în viitor (Ticket #4), care va apela un API
     console.log('Scrape triggered for:', urlInput); // Afișăm în consolă mesajul și valoarea urlInput
   };
@@ -25,57 +25,57 @@ const ScrapePage: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<RadioOption>("scrape1");
 
 
-
-  // Returnăm structura JSX a componentului
+  // We return the JSX structure of the component
   return (
-    // Creăm un container cu clase Tailwind pentru aspect (min-height, background, padding)
-    <div className="min-h-screen bg-gray-100 p-4">
-      {/* Titlul principal al paginii */}
-      <h1 style={{outline:"2px solid blue",width:"100%"}}className="text-2xl font-bold mb-4">Scrape Page {selectedOption}</h1>
+    // Create a container with Tailwind classes for appearance (min-height, background, padding)
+    <div className=" min-h-screen bg-gray-100 p-4 flex flex-col items-center pt-20">
+      {/* Main page title */}
+      <h1 style={{outline:"2px",width:"100%"}}className="text-2xl font-bold mb-4 text-center">
+        Web Scraping Made Simple
+      <h2 className="m-0">Extract and clean web data</h2>
+      </h1>
       
-
-       {/* Secțiune pentru input-ul unde utilizatorul introduce URL-ul */}
-       <div className="mb-2 inputContainer">
-        <label className="block mb-1">URL to Scrape:</label>
+       {/* Input section where the user enters the URL */}
+       <div className="inputContainer w-full max-w-md text-left">
+        <h3 className="block mb-2 font-bold">Website URL:</h3>
         <input
-          className="border rounded p-2 w-full" // Clase Tailwind pentru stilizare
-          type="text"                           // Tipul input-ului este text
-          value={urlInput}                      // Valoarea input-ului este urlInput din starea componentului
-          onChange={(e) => setUrlInput(e.target.value)} // Actualizează starea când utilizatorul tastează
-          placeholder="https://example.com"     // Afișăm un placeholder în cazul în care câmpul e gol
+          className="border rounded p-2 w-full" // Tailwind class for styling
+          type="text"                           // The input type is text
+          value={urlInput}                      // Input value is urlInput from component state
+          onChange={(e) => setUrlInput(e.target.value)} // Update state when user taps
+          placeholder="https://example.com"     // Display a placeholder in case the field is goal
         />
+        
       </div>
       
       <RadioButtonsExample setter={setSelectedOption} getter={selectedOption}/>
      
       
 
-      {/* Afișăm mesajul de eroare dacă există */}
+      {/* Display error message if any */}
       {error && (
         <div className="text-red-600 mb-2">
           {error}
         </div>
       )}
 
-      {/* Butonul care declanșează funcția handleScrape */}
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" // Clase de stilizare
-        onClick={handleScrape} // Când este apăsat butonul, se execută handleScrape
+      {/* Button that triggers the handleScrape function */}
+      <button className="scrapeButton" onClick={handleScrape} // When the button is pressed, handleScrape is executed
       >
-        Scrape & Download
+        Scrape
       </button>
 
-      <footer>
-      <p>&copy;{new Date().getFullYear()} DREAM TEAM HOLA AMIGOS</p>
+      <footer className='footer'>
+      <p>&copy;{new Date().getFullYear()} Hochschule Augsburg & LNU Student Team Project</p>
       </footer>
 
     </div>
   );
 };
 
-// Exportăm componenta pentru a putea fi utilizată în alte locuri din aplicație
+// Export component to be used elsewhere in the application
 export default ScrapePage;
 
-//parametri pt onclick +text
+//settings pt onclick +text
 
 //css separat
