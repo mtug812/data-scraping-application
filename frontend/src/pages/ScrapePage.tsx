@@ -1,6 +1,8 @@
 import React, { useState } from 'react'; // Importă React și hook-ul useState din bibliotecă
 import RadioButtonsExample from '../components/RadioButtonsExample';
 import "./ScrapePage.css"
+import sendAxiosRequest from '../api/axios';
+import { downloadAsTxt } from '../const/utils';
 type RadioOption = "scrape1" | "scrape2" | "scrape3";
 
 // Definim un component funcțional TypeScript numit ScrapePage
@@ -11,18 +13,27 @@ const ScrapePage: React.FC = () => {
   // Definim o stare error, inițializată cu un string gol, și o funcție setError pentru a modifica această stare
   const [error, setError] = useState('');
 
+  const [selectedOption, setSelectedOption] = useState<RadioOption>("scrape1");
+
   // Funcția asincronă care se ocupă de procesul de "scrape"
   const handleScrape = async () => {
     console.log(selectedOption);
-     
-    setError(''); // Resetăm eroarea înainte de a începe un nou "scrape"
+     if (urlInput === ''){
+      window.alert("insert valid url")
+      return
+     }
+     const response = await sendAxiosRequest("http://127.0.0.1:5000/scrape_with_bs4", {url:urlInput})
+     if (response){
+      console.log(response)
+      downloadAsTxt(response, "test.txt")
+      setError(''); // Resetăm eroarea înainte de a începe un nou "scrape"
     // TODO: Aici va fi implementată logica de fetch în viitor (Ticket #4), care va apela un API
     console.log('Scrape triggered for:', urlInput); // Afișăm în consolă mesajul și valoarea urlInput
+     }
   };
 
   
 
-  const [selectedOption, setSelectedOption] = useState<RadioOption>("scrape1");
 
 
 
