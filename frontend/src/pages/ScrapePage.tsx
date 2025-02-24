@@ -3,7 +3,9 @@ import RadioButtonsExample from '../components/RadioButtonsExample';
 import "./ScrapePage.css"
 import sendAxiosRequest from '../api/axios';
 import { downloadAsTxt } from '../const/utils';
-type RadioOption = "scrape1" | "scrape2" | "scrape3";
+import { RadioOption } from '../const/types';
+
+
 
 // Definim un component funcțional TypeScript numit ScrapePage
 const ScrapePage: React.FC = () => {
@@ -22,7 +24,7 @@ const ScrapePage: React.FC = () => {
       window.alert("insert valid url")
       return
      }
-     const response = await sendAxiosRequest("http://127.0.0.1:5000/scrape_with_bs4", {url:urlInput})
+     const response = await sendAxiosRequest("http://127.0.0.1:5000/scrape_with_bs4", {url:urlInput}) //backend vrea "url" key
      if (response){
       console.log(response)
       downloadAsTxt(response, "test.txt")

@@ -1,0 +1,1 @@
+export type RadioOption = "scrape1" | "scrape2" | "scrape3";

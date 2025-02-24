@@ -22,3 +22,5 @@ export function downloadAsTxt(text:string, filename:string) {
     // Clean up by revoking the object URL
     URL.revokeObjectURL(url);
   }
+
+  //
