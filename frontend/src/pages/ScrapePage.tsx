@@ -1,23 +1,25 @@
-import React, { useState } from 'react'; // Importă React și hook-ul useState din bibliotecă
+import React, { useState } from 'react';
 import RadioButtonsExample from '../components/RadioButtonsExample';
 import "./ScrapePage.css"
+import PDButtons from '../components/PDButtons';
+import "../stylers/PDButtons.css";
 type RadioOption = "scrape1" | "scrape2" | "scrape3";
 
-// Definim un component funcțional TypeScript numit ScrapePage
+// We define a functional TypeScript component called ScrapePage
 const ScrapePage: React.FC = () => {
-  // Definim o stare urlInput, inițializată cu un string gol, și o funcție setUrlInput pentru a modifica această stare
+  // We define a urlInput state, initialized with a goal string, and a setUrlInput function to modify this state
   const [urlInput, setUrlInput] = useState('');
   
-  // Definim o stare error, inițializată cu un string gol, și o funcție setError pentru a modifica această stare
+  // We define an error state, initialized with a goal string, and a setError function to modify this state
   const [error, setError] = useState('');
 
-  // Funcția asincronă care se ocupă de procesul de "scrape"
+  // Asynchronous function that takes care of the "scrape" process
   const handleScrape = async () => {
     console.log(selectedOption);
      
-    setError(''); //setzt die Fehlermeldung zurück, wenn vorher ein Fehler aufgetreten ist, verschwindet dieser.
-    // TODO: Aici va fi implementată logica de fetch în viitor (Ticket #4), care va apela un API
-    console.log('Scrape triggered for:', urlInput); // Afișăm în consolă mesajul și valoarea urlInput
+    setError(''); //resets the error message, if an error occurred before, it disappears.
+    // We implement fetch logic in the future (Ticket #4), which will call an API
+    console.log('Scrape triggered for:', urlInput); // Display in console message and urlInput value
   };
 
   
@@ -60,10 +62,9 @@ const ScrapePage: React.FC = () => {
       )}
 
       {/* Button that triggers the handleScrape function */}
-      <button className="scrapeButton" onClick={handleScrape} // When the button is pressed, handleScrape is executed
-      >
-        Scrape
-      </button>
+      <button className="scrapeButton" onClick={handleScrape}>Scrape</button>
+
+      
 
       <footer className='footer'>
       <p>&copy;{new Date().getFullYear()} Hochschule Augsburg & LNU Student Team Project</p>
@@ -79,3 +80,6 @@ export default ScrapePage;
 //settings pt onclick +text
 
 //css separat
+
+
+//PDButtons aufrufen!!

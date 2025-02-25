@@ -42,7 +42,8 @@ h2 {
     background-color: rgb(82, 116, 196);/* optional, wenn du schwarzen Hintergrund willst */
     color: white;            /* optional, weiße Textfarbe */
     border-radius: 5px;      /* abgerundete Ecken */
-    cursor: pointer;         /* Cursor ändert sich bei Hover */
+    cursor: pointer;        /* Cursor ändert sich bei Hover */
+    width: 30vw;
   }
   
 
