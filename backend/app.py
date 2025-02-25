@@ -84,6 +84,11 @@ def download_txt():
     return txt_file
 
 
+@app.route("/preview", methods=["GET"])
+def preview():
+    return jsonify(scraped_data_to_txt_file)
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':

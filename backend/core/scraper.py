@@ -31,7 +31,7 @@ def scrape_with_requests(url: str):
         if response.status_code != 200:
             return (
                 jsonify(
-                   {"status": "failure", "error": 
+                   {"status": "failure", "error":
                     "Failed to retrieve URL content"}
                 ),
                 400,
