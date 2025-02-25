@@ -9,11 +9,16 @@ Endpoints:
 
 """
 
+import os
+from os import path
 from config import app, db
 from flask import request, jsonify
-
 from core.scraper import scrape_with_bs4, scrape_with_requests
 from core.file_handler import scraped_data_to_txt_file, get_txt_file
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager
+from flask_login import login_user, login_required, logout_user, current_user
+from backend.core.models import User, History
 
 
 @app.route("/scrape", methods=["POST"])
@@ -22,6 +27,7 @@ def scrape():
     Endpoint to scrape a static website and save the output to a TXT file.
     Expects a JSON body with a "url" key.
     """
+    print("test")
     # retrieve the json data from the post request
     data = request.json
     url = data.get("url")
@@ -44,10 +50,19 @@ def scrape():
 
     scraped_data_to_txt_file(raw_html)
 
+    if current_user.is_authenticated:
+        new_history = History(url=url, scraped_data=raw_html,
+                              scraping_method=scraping_method,
+                              user_id=current_user.id)
+        db.session.add(new_history)
+        db.session.commit()
+        print(f"Scraped data saved to DB for user {current_user.id}")
+
     return (
         jsonify(
             {
-                "message": f"URL Scraped with {scraping_method} and content saved to TXT file"
+               "message": f"""URL Scraped
+                with {scraping_method} and content saved to TXT file"""
             }
         ),
         201,
@@ -69,39 +84,97 @@ def download_txt():
     return txt_file
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.json.get('email')
+        password = request.json.get('password')
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if check_password_hash(user.password, password):
+                login_user(user, remember=True)
+                return jsonify({"message": "Logged in successfully!"}), 200
+                # user doesn't have to login every time
+                # only under some circonstances
+            else:
+                return jsonify({"error": "Invalid password"}), 401
+        else:
+            return jsonify({"error": "Invalid email"}), 401
+
+
+@app.route('/logout')
+@login_required  # the user can't logout only when he's logged in
+def logout():
+    logout_user()
+    return jsonify('Logged out succeccfully')
+# redirect the user to the login page after logout
+
+
+@app.route('/sign-up', methods=['GET', 'POST'])
+def sign_up():
+    if request.method == 'POST':
+        email = request.json.get('email')
+        first_name = request.json.get('first_name')
+        password1 = request.json.get('password1')
+        password2 = request.json.get('password2')
+
+        user = User.query.filter_by(email=email).first()
+        # make sure the account doesn't exist
+        if user:  # if the email already exist ->error
+            return jsonify({"error": "Email already exists."}), 400
+        elif len(email) < 4:
+            return jsonify({
+                "error": "Email must be greater than 3 characters."}), 400
+        elif len(first_name) < 2:
+            return jsonify({
+                "error": "First name must be greater than 1 character."}), 400
+        elif password1 != password2:
+            return jsonify({"error": "Passwords don't match."}), 400
+        elif len(password1) < 7:
+            return jsonify({
+                "error": "Password must be at least 7 characters."}), 400
+        else:
+            new_user = User(email=email, first_name=first_name,
+                            password=generate_password_hash(
+                               password1, method='pbkdf2:sha256'))
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user, remember=True)
+            return jsonify({"message": "Account created!"}), 201
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+@app.route("/history", methods=["GET"])
+@login_required
+def history():
+    user_history = History.query.filter_by(
+      user_id=current_user.id).order_by(History.date.desc()).all()
+
+    history_list = [
+        {
+            "url": record.url,
+            "scraped_data": record.content,
+            "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date
+            else None
+        }
+        for record in user_history
+    ]
+
+    return jsonify(history_list), 200
+
+
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()
+        if not path.exists("instance/" + str(os.getenv("database_uri"))):
+            db.create_all()
 
         app.run(debug=True)
-
-# def url_to_db(url):
-#     url: str = Url(url=url)
-#     try:
-#         db.session.add(url)
-#         db.session.commit()
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 400
-
-#     return jsonify({"message": "URL stored successfully to database"}), 201
-
-
-# @app.route("/api/urls", methods=["GET"])
-# def get_urls():
-#     urls = Url.query.all()
-#     json_urls = [url.to_json() for url in urls]
-
-#     return jsonify(json_urls)
-
-
-# @app.route("/api/remove_url/<int:id>", methods=["DELETE"])
-# def remove_url(id: int):
-#     url = Url.query.get(id)
-
-#     if not url:
-#         return jsonify({"error": "URL not found"}), 404
-
-#     db.session.delete(url)
-#     db.session.commit()
-
-#     return jsonify({"message": "URL removed successfully"})

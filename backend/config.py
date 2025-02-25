@@ -29,7 +29,9 @@ CORS(app)
 load_dotenv()
 
 # Database configuration
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("database_uri")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "default-secret-key")
+
 
 db = SQLAlchemy(app)  # create a database instance
