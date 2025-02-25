@@ -1,8 +1,8 @@
 import React, { useState } from 'react'; // Importă React și hook-ul useState din bibliotecă
 import RadioButtonsExample from '../components/RadioButtonsExample';
 import "./ScrapePage.css"
-import sendAxiosRequest from '../api/axios';
-import { downloadAsTxt } from '../const/utils';
+import sendAxiosRequest, { downloadFile } from '../api/axios';
+//import { downloadAsTxt } from '../const/utils';
 import { RadioOption } from '../const/types';
 
 
@@ -15,19 +15,26 @@ const ScrapePage: React.FC = () => {
   // Definim o stare error, inițializată cu un string gol, și o funcție setError pentru a modifica această stare
   const [error, setError] = useState('');
 
-  const [selectedOption, setSelectedOption] = useState<RadioOption>("scrape1");
+  const [selectedOption, setSelectedOption] = useState<RadioOption>("requests");
 
   // Funcția asincronă care se ocupă de procesul de "scrape"
   const handleScrape = async () => {
     console.log(selectedOption);
+    console.log("sending to backend:", {
+      url: urlInput,
+      scraping_method: selectedOption,
+  });
      if (urlInput === ''){
       window.alert("insert valid url")
       return
      }
-     const response = await sendAxiosRequest("http://127.0.0.1:5000/scrape_with_bs4", {url:urlInput}) //backend vrea "url" key
+     const response = await sendAxiosRequest("http://127.0.0.1:5000/scrape", {url:urlInput, 
+      scraping_method:selectedOption}) //backend vrea "url" key
      if (response){
       console.log(response)
-      downloadAsTxt(response, "test.txt")
+      downloadFile("http://127.0.0.1:5000/download/txt", "test.txt")
+      //  window.location.href = "http://127.0.0.1:5000/download/txt"
+      //downloadAsTxt(response, "test25feb.txt")
       setError(''); // Resetăm eroarea înainte de a începe un nou "scrape"
     // TODO: Aici va fi implementată logica de fetch în viitor (Ticket #4), care va apela un API
     console.log('Scrape triggered for:', urlInput); // Afișăm în consolă mesajul și valoarea urlInput

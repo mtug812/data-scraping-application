@@ -24,11 +24,11 @@ const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) =>
         <input
           type="radio"
           name="options"
-          value="scrape1"
-          checked={getter === "scrape1"}
+          value="requests"
+          checked={getter === "requests"}
           onChange={handleOptionChange}
         />
-        hallo
+        Requests
       </label>
       <br />
 
@@ -36,11 +36,11 @@ const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) =>
         <input
           type="radio"
           name="options"
-          value="scrape2"
-          checked={getter === "scrape2"}
+          value="bs4"
+          checked={getter === "bs4"}
           onChange={handleOptionChange}
         />
-        B
+        BS4
       </label>
       <br />
 
