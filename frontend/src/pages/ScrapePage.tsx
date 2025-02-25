@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import RadioButtonsExample from '../components/RadioButtonsExample';
 import "./ScrapePage.css"
-import PDButtons from '../components/PDButtons';
+//import PDButtons from '../components/PDButtons';
 import "../stylers/PDButtons.css";
 type RadioOption = "scrape1" | "scrape2" | "scrape3";
 
@@ -81,5 +81,6 @@ export default ScrapePage;
 
 //css separat
 
+//<PDButtons></PDButtons>
 
 //PDButtons aufrufen!!

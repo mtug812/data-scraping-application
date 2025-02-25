@@ -16,7 +16,7 @@ const PDButtons = () => {
            method: "POST",
            headers: { "Content-Type": "application/json" },
            body: JSON.stringify({ url: "https://example.com", option: "scrape1" })
-         });
+        });
         
         const data = await response.json();  //converts response from backend
         console.log("Answer from Backend:", data);
