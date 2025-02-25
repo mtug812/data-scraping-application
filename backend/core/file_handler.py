@@ -20,6 +20,8 @@ def scraped_data_to_txt_file(raw_html) -> None:
         file.write(raw_html)
 
 
+
+
 # Serve TXT file for download
 def get_txt_file():
     """
