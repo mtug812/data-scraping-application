@@ -19,6 +19,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_login import login_user, login_required, logout_user, current_user
 from backend.core.models import User, History
+from core.repository import store_user_history
 
 
 @app.route("/scrape", methods=["POST"])
@@ -51,11 +52,7 @@ def scrape():
     scraped_data_to_txt_file(raw_html)
 
     if current_user.is_authenticated:
-        new_history = History(url=url, scraped_data=raw_html,
-                              scraping_method=scraping_method,
-                              user_id=current_user.id)
-        db.session.add(new_history)
-        db.session.commit()
+        store_user_history(url, raw_html, scraping_method, current_user.id)
         print(f"Scraped data saved to DB for user {current_user.id}")
 
     return (
