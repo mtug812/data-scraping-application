@@ -40,7 +40,7 @@ def scrape_with_requests(url: str):
         # Return the entire HTML content.
         return response.text
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         # If an error occurs, return a message with the error details.
         return {"status": "failure", "error": f"An error occurred: {e}"}
 
