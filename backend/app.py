@@ -82,7 +82,7 @@ def download_txt():
     return txt_file
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
     if request.method == 'POST':
         email = request.json.get('email')
@@ -109,7 +109,7 @@ def logout():
 # redirect the user to the login page after logout
 
 
-@app.route('/sign-up', methods=['GET', 'POST'])
+@app.route('/sign-up', methods=['POST'])
 def sign_up():
     if request.method == 'POST':
         email = request.json.get('email')
