@@ -14,6 +14,17 @@ from flask import request, jsonify
 
 from core.scraper import scrape_with_bs4, scrape_with_requests
 from core.file_handler import scraped_data_to_txt_file, get_txt_file
+from core.repository import store_user_history
+from core.models import User
+import os
+from os import path
+from dotenv import load_dotenv
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user, login_required, logout_user, current_user
+from flask_login import LoginManager
+
+
+load_dotenv()
 
 
 @app.route("/scrape", methods=["POST"])
@@ -21,6 +32,7 @@ def scrape():
     """
     Endpoint to scrape a static website and save the output to a TXT file.
     Expects a JSON body with a "url" key.
+    json response: status: 1 -> success, if 2 -> error
     """
     # retrieve the json data from the post request
     data = request.json
@@ -29,25 +41,27 @@ def scrape():
 
     # if no url is provides , return an error with http 400 status(bad request)
     if not url:
-        return jsonify({"error": "URL is required"}), 400
+        return jsonify({"error": "URL is required", "status": 2}), 400
     if not scraping_method:
-        return jsonify({"error": "Scraping method is required"}), 400
+        return jsonify({"error": "Scraping method is required", "status": 2}), 400
 
     if scraping_method == "requests":
         # call the scrape website func for the scraped result
-        raw_html = scrape_with_requests(url)
+        scrape_result = scrape_with_requests(url)
     elif scraping_method == "bs4":
         # call the scrape website func for the scraped result
-        raw_html = scrape_with_bs4(url)
+        scrape_result = scrape_with_bs4(url)
     else:
-        return jsonify({"error": "Invalid scraping method"}), 400
+        return jsonify({"error": "Invalid scraping method", "status": 2}), 400
 
-    scraped_data_to_txt_file(raw_html)
-
+    scraped_data_to_txt_file(scrape_result)
+    if current_user.is_authenticated:
+        store_user_history(url, scraping_method, scrape_result, current_user.id)
     return (
         jsonify(
             {
-                "message": f"URL Scraped with {scraping_method} and content saved to TXT file"
+                "message": f"URL Scraped with {scraping_method} and content saved",
+                "scrape_result": scrape_result,
             }
         ),
         201,
@@ -69,11 +83,82 @@ def download_txt():
     return txt_file
 
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.json.get("email")
+        password = request.json.get("password")
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if check_password_hash(user.password, password):
+                login_user(user, remember=True)
+                return jsonify({"message": "Logged in successfully!"})
+            else:
+                return jsonify({"error": "Incorrect password, try again."})
+        else:
+            return jsonify({"error": "Email does not exist."})
+
+    # return render_template("login.html", user=current_user)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return jsonify({"Message": "Logged out successfully."})
+
+
+@app.route("/sign-up", methods=["GET", "POST"])
+def sign_up():
+    if request.method == "POST":
+        email = request.json.get("email")
+        first_name = request.json.get("firstName")
+        password1 = request.json.get("password1")
+        password2 = request.json.get("password2")
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            return jsonify({"error": "Email already exists."})
+        elif len(email) < 4:
+            return jsonify({"error": "Email must be greater than 3 characters."})
+        elif len(first_name) < 2:
+            return jsonify({"error": "First name must be greater than 1 character."})
+        elif password1 != password2:
+            return jsonify({"error": "Passwords don't match."})
+        elif len(password1) < 7:
+            return jsonify({"error": "Password must be at least 7 characters."})
+        else:
+            new_user = User(
+                email=email,
+                first_name=first_name,
+                password=generate_password_hash(password1, method="pbkdf2:sha256"),
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            login_user(new_user, remember=True)
+            return jsonify({"message": "Account created successfully!"})
+            # return redirect(url_for("views.home"))
+
+    # return render_template("sign_up.html", user=current_user)
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
+
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()
-
+        if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
+            db.create_all()
+            print("Database created!")
         app.run(debug=True)
+
 
 # def url_to_db(url):
 #     url: str = Url(url=url)

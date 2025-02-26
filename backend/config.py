@@ -23,6 +23,7 @@ from flask_cors import CORS
 
 
 app = Flask(__name__)  # create an app instance
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 CORS(app)
 
 # Load environment variables from .env file
