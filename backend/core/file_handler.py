@@ -16,10 +16,9 @@ def scraped_data_to_txt_file(scrape_result):
     """
     with open(DATA_FILE_TXT, "w", encoding="utf-8") as file:
         file.write(scrape_result)
-    return scrape_result
-
 
 # Serve TXT file for download
+# this part is a frontend part
 def get_txt_file():
     """
     Retrieve the scraped data as a text file.
@@ -27,12 +26,13 @@ def get_txt_file():
     This function checks if the text file containing scraped data exists.
     If the file exists, it sends the file as an attachment with the MIME type
     set to "text/plain" and the download name "scraped_raw_data.txt".
-    If the file does not exist, it returns a JSON response with an error message
-    and a 404 status code.
+    If the file does not exist, it returns a JSON response with an error
+    message and a 404 status code.
 
     Returns:
-        Response: A Flask response object containing the text file as an attachment
-                  if it exists, or a JSON error message with a 404 status code if it doesn't.
+        Response: A Flask response object containing the text file as an
+        attachment if it exists, or a JSON error message with a 404 status
+        code if it doesn't.
     """
     if os.path.exists(DATA_FILE_TXT):
         return send_file(

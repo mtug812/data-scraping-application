@@ -9,21 +9,17 @@ Endpoints:
 
 """
 
+import os
+from os import path
 from config import app, db
 from flask import request, jsonify
 from core.scraper import scrape_with_bs4, scrape_with_requests
 from core.file_handler import scraped_data_to_txt_file, get_txt_file
 from core.repository import store_user_history
-from core.models import User
-import os
-from os import path
-from dotenv import load_dotenv
+from core.models import User, History
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_required, logout_user, current_user
 from flask_login import LoginManager
-
-
-load_dotenv()
+from flask_login import login_user, login_required, logout_user, current_user
 
 
 @app.route("/scrape", methods=["POST"])
@@ -33,6 +29,7 @@ def scrape():
     Expects a JSON body with a "url" key.
     json response: status: 1 -> success, if 2 -> error
     """
+    print("test")
     # retrieve the json data from the post request
     data = request.json
     url = data.get("url")
@@ -52,15 +49,15 @@ def scrape():
         scrape_result = scrape_with_bs4(url)
     else:
         return jsonify({"error": "Invalid scraping method", "status": 2}), 400
-
+      
     scraped_data_to_txt_file(scrape_result)
     if current_user.is_authenticated:
         store_user_history(url, scraping_method, scrape_result, current_user.id)
     return (
         jsonify(
             {
-                "message": f"URL Scraped with {scraping_method} and content saved",
-                "scrape_result": scrape_result,
+               "message": f"URL Scraped with {scraping_method} and content saved",
+               "scrape_result": scrape_result,
             }
         ),
         201,
@@ -140,8 +137,27 @@ login_manager.init_app(app)
 
 
 @login_manager.user_loader
-def load_user(id):
-    return User.query.get(int(id))
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+@app.route("/history", methods=["GET"])
+@login_required
+def history():
+    user_history = History.query.filter_by(
+      user_id=current_user.id).order_by(History.date.desc()).all()
+
+    history_list = [
+        {
+            "url": record.url,
+            "scraped_data": record.content,
+            "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date
+            else None
+        }
+        for record in user_history
+    ]
+
+    return jsonify(history_list), 200
 
 
 if __name__ == "__main__":
