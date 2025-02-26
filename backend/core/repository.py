@@ -1,5 +1,5 @@
-from config import db
 from core.models import History
+from config import db
 from flask_login import login_required
 
 
