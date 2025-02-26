@@ -36,30 +36,31 @@ def scrape():
 
     # if no url is provides , return an error with http 400 status(bad request)
     if not url:
-        return jsonify({"error": "URL is required"}), 400
+        return jsonify({"error": "URL is required"}), 40001000
     if not scraping_method:
         return jsonify({"error": "Scraping method is required"}), 400
 
     if scraping_method == "requests":
         # call the scrape website func for the scraped result
-        raw_html = scrape_with_requests(url)
+        scrape_result = scrape_with_requests(url)
     elif scraping_method == "bs4":
         # call the scrape website func for the scraped result
-        raw_html = scrape_with_bs4(url)
+        scrape_result = scrape_with_bs4(url)
     else:
         return jsonify({"error": "Invalid scraping method"}), 400
 
-    scraped_data_to_txt_file(raw_html)
+    scraped_data_to_txt_file(scrape_result)
 
     if current_user.is_authenticated:
-        store_user_history(url, raw_html, scraping_method, current_user.id)
+        store_user_history(url, scrape_result, scraping_method,
+                           current_user.id)
         print(f"Scraped data saved to DB for user {current_user.id}")
 
     return (
         jsonify(
             {
-               "message": f"""URL Scraped
-                with {scraping_method} and content saved to TXT file"""
+               "message": f"URL Scraped with {scraping_method} and content saved",
+               "scrape_result": scrape_result,
             }
         ),
         201,
@@ -79,11 +80,6 @@ def download_txt():
     """
     txt_file = get_txt_file()
     return txt_file
-
-
-@app.route("/preview", methods=["GET"])
-def preview():
-    return jsonify(scraped_data_to_txt_file)
 
 
 @app.route('/login', methods=['GET', 'POST'])

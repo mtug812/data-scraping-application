@@ -4,18 +4,18 @@ from flask import send_file, jsonify
 DATA_FILE_TXT = "scraped_raw_data.txt"
 
 
-def scraped_data_to_txt_file(raw_html):
+def scraped_data_to_txt_file(scrape_result):
     """
     Writes raw HTML content to a text file.
 
     Args:
-        raw_html (str): The raw HTML content to be written to the file.
+        scrape_result (str): The raw HTML content to be written to the file.
 
     Returns:
         None
     """
     with open(DATA_FILE_TXT, "w", encoding="utf-8") as file:
-        file.write(raw_html)
+        file.write(scrape_result)
 
 
 # Serve TXT file for download

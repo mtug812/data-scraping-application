@@ -83,7 +83,7 @@ def scrape_with_bs4(url: str):
 
 
 # store the raw scraped data to the database as a BLOB
-# def raw_html_to_db(pretofied_data):
+# def scrape_result_to_db(pretofied_data):
 #     raw_scraped_data = Scraped_raw(scraped_raw_data=pretofied_data)
 #     try:
 #         db.session.add(raw_scraped_data)
