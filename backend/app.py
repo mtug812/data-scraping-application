@@ -83,23 +83,20 @@ def download_txt():
     return txt_file
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET"])
 def login():
-    if request.method == "POST":
-        email = request.json.get("email")
-        password = request.json.get("password")
+    email = request.json.get("email")
+    password = request.json.get("password")
 
-        user = User.query.filter_by(email=email).first()
-        if user:
-            if check_password_hash(user.password, password):
-                login_user(user, remember=True)
-                return jsonify({"message": "Logged in successfully!"})
-            else:
-                return jsonify({"error": "Incorrect password, try again."})
+    user = User.query.filter_by(email=email).first()
+    if user:
+        if check_password_hash(user.password, password):
+            login_user(user, remember=True)
+            return jsonify({"message": "Logged in successfully!"})
         else:
-            return jsonify({"error": "Email does not exist."})
-
-    # return render_template("login.html", user=current_user)
+            return jsonify({"error": "Incorrect password, try again."})
+    else:
+        return jsonify({"error": "Email does not exist."})
 
 
 @app.route("/logout")
@@ -109,38 +106,34 @@ def logout():
     return jsonify({"Message": "Logged out successfully."})
 
 
-@app.route("/sign-up", methods=["GET", "POST"])
+@app.route("/sign-up", methods=["POST"])
 def sign_up():
-    if request.method == "POST":
-        email = request.json.get("email")
-        first_name = request.json.get("firstName")
-        password1 = request.json.get("password1")
-        password2 = request.json.get("password2")
+    email = request.json.get("email")
+    first_name = request.json.get("firstName")
+    password1 = request.json.get("password1")
+    password2 = request.json.get("password2")
 
-        user = User.query.filter_by(email=email).first()
-        if user:
-            return jsonify({"error": "Email already exists."})
-        elif len(email) < 4:
-            return jsonify({"error": "Email must be greater than 3 characters."})
-        elif len(first_name) < 2:
-            return jsonify({"error": "First name must be greater than 1 character."})
-        elif password1 != password2:
-            return jsonify({"error": "Passwords don't match."})
-        elif len(password1) < 7:
-            return jsonify({"error": "Password must be at least 7 characters."})
-        else:
-            new_user = User(
-                email=email,
-                first_name=first_name,
-                password=generate_password_hash(password1, method="pbkdf2:sha256"),
-            )
-            db.session.add(new_user)
-            db.session.commit()
-            login_user(new_user, remember=True)
-            return jsonify({"message": "Account created successfully!"})
-            # return redirect(url_for("views.home"))
-
-    # return render_template("sign_up.html", user=current_user)
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return jsonify({"error": "Email already exists."})
+    elif len(email) < 4:
+        return jsonify({"error": "Email must be greater than 3 characters."})
+    elif len(first_name) < 2:
+        return jsonify({"error": "First name must be greater than 1 character."})
+    elif password1 != password2:
+        return jsonify({"error": "Passwords don't match."})
+    elif len(password1) < 7:
+        return jsonify({"error": "Password must be at least 7 characters."})
+    else:
+        new_user = User(
+            email=email,
+            first_name=first_name,
+            password=generate_password_hash(password1, method="pbkdf2:sha256"),
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        login_user(new_user, remember=True)
+        return jsonify({"message": "Account created successfully!"})
 
 
 login_manager = LoginManager()
@@ -158,35 +151,3 @@ if __name__ == "__main__":
             db.create_all()
             print("Database created!")
         app.run(debug=True)
-
-
-# def url_to_db(url):
-#     url: str = Url(url=url)
-#     try:
-#         db.session.add(url)
-#         db.session.commit()
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 400
-
-#     return jsonify({"message": "URL stored successfully to database"}), 201
-
-
-# @app.route("/api/urls", methods=["GET"])
-# def get_urls():
-#     urls = Url.query.all()
-#     json_urls = [url.to_json() for url in urls]
-
-#     return jsonify(json_urls)
-
-
-# @app.route("/api/remove_url/<int:id>", methods=["DELETE"])
-# def remove_url(id: int):
-#     url = Url.query.get(id)
-
-#     if not url:
-#         return jsonify({"error": "URL not found"}), 404
-
-#     db.session.delete(url)
-#     db.session.commit()
-
-#     return jsonify({"message": "URL removed successfully"})
