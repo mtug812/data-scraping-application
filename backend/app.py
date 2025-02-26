@@ -15,11 +15,11 @@ from config import app, db
 from flask import request, jsonify
 from core.scraper import scrape_with_bs4, scrape_with_requests
 from core.file_handler import scraped_data_to_txt_file, get_txt_file
+from core.repository import store_user_history
+from core.models import User, History
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_login import login_user, login_required, logout_user, current_user
-from backend.core.models import User, History
-from core.repository import store_user_history
 
 
 @app.route("/scrape", methods=["POST"])
