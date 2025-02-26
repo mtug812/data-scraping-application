@@ -27,6 +27,7 @@ def scrape():
     """
     Endpoint to scrape a static website and save the output to a TXT file.
     Expects a JSON body with a "url" key.
+    json response: status: 1 -> success, if 2 -> error
     """
     print("test")
     # retrieve the json data from the post request
@@ -36,9 +37,9 @@ def scrape():
 
     # if no url is provides , return an error with http 400 status(bad request)
     if not url:
-        return jsonify({"error": "URL is required"}), 40001000
+        return jsonify({"error": "URL is required", "status": 2}), 400
     if not scraping_method:
-        return jsonify({"error": "Scraping method is required"}), 400
+        return jsonify({"error": "Scraping method is required", "status": 2}), 400
 
     if scraping_method == "requests":
         # call the scrape website func for the scraped result
@@ -47,15 +48,11 @@ def scrape():
         # call the scrape website func for the scraped result
         scrape_result = scrape_with_bs4(url)
     else:
-        return jsonify({"error": "Invalid scraping method"}), 400
-
+        return jsonify({"error": "Invalid scraping method", "status": 2}), 400
+      
     scraped_data_to_txt_file(scrape_result)
-
     if current_user.is_authenticated:
-        store_user_history(url, scrape_result, scraping_method,
-                           current_user.id)
-        print(f"Scraped data saved to DB for user {current_user.id}")
-
+        store_user_history(url, scraping_method, scrape_result, current_user.id)
     return (
         jsonify(
             {
@@ -82,64 +79,57 @@ def download_txt():
     return txt_file
 
 
-@app.route('/login', methods=['POST'])
+@app.route("/login", methods=["GET"])
 def login():
-    if request.method == 'POST':
-        email = request.json.get('email')
-        password = request.json.get('password')
+    email = request.json.get("email")
+    password = request.json.get("password")
 
-        user = User.query.filter_by(email=email).first()
-        if user:
-            if check_password_hash(user.password, password):
-                login_user(user, remember=True)
-                return jsonify({"message": "Logged in successfully!"}), 200
-                # user doesn't have to login every time
-                # only under some circonstances
-            else:
-                return jsonify({"error": "Invalid password"}), 401
+    user = User.query.filter_by(email=email).first()
+    if user:
+        if check_password_hash(user.password, password):
+            login_user(user, remember=True)
+            return jsonify({"message": "Logged in successfully!"})
         else:
-            return jsonify({"error": "Invalid email"}), 401
+            return jsonify({"error": "Incorrect password, try again."})
+    else:
+        return jsonify({"error": "Email does not exist."})
 
 
-@app.route('/logout')
-@login_required  # the user can't logout only when he's logged in
+@app.route("/logout")
+@login_required
 def logout():
     logout_user()
-    return jsonify('Logged out succeccfully')
-# redirect the user to the login page after logout
+    return jsonify({"Message": "Logged out successfully."})
 
 
-@app.route('/sign-up', methods=['POST'])
+@app.route("/sign-up", methods=["POST"])
 def sign_up():
-    if request.method == 'POST':
-        email = request.json.get('email')
-        first_name = request.json.get('first_name')
-        password1 = request.json.get('password1')
-        password2 = request.json.get('password2')
+    email = request.json.get("email")
+    first_name = request.json.get("firstName")
+    password1 = request.json.get("password1")
+    password2 = request.json.get("password2")
 
-        user = User.query.filter_by(email=email).first()
-        # make sure the account doesn't exist
-        if user:  # if the email already exist ->error
-            return jsonify({"error": "Email already exists."}), 400
-        elif len(email) < 4:
-            return jsonify({
-                "error": "Email must be greater than 3 characters."}), 400
-        elif len(first_name) < 2:
-            return jsonify({
-                "error": "First name must be greater than 1 character."}), 400
-        elif password1 != password2:
-            return jsonify({"error": "Passwords don't match."}), 400
-        elif len(password1) < 7:
-            return jsonify({
-                "error": "Password must be at least 7 characters."}), 400
-        else:
-            new_user = User(email=email, first_name=first_name,
-                            password=generate_password_hash(
-                               password1, method='pbkdf2:sha256'))
-            db.session.add(new_user)
-            db.session.commit()
-            login_user(new_user, remember=True)
-            return jsonify({"message": "Account created!"}), 201
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return jsonify({"error": "Email already exists."})
+    elif len(email) < 4:
+        return jsonify({"error": "Email must be greater than 3 characters."})
+    elif len(first_name) < 2:
+        return jsonify({"error": "First name must be greater than 1 character."})
+    elif password1 != password2:
+        return jsonify({"error": "Passwords don't match."})
+    elif len(password1) < 7:
+        return jsonify({"error": "Password must be at least 7 characters."})
+    else:
+        new_user = User(
+            email=email,
+            first_name=first_name,
+            password=generate_password_hash(password1, method="pbkdf2:sha256"),
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        login_user(new_user, remember=True)
+        return jsonify({"message": "Account created successfully!"})
 
 
 login_manager = LoginManager()
@@ -172,7 +162,7 @@ def history():
 
 if __name__ == "__main__":
     with app.app_context():
-        if not path.exists("instance/" + str(os.getenv("database_uri"))):
+        if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
             db.create_all()
-
+            print("Database created!")
         app.run(debug=True)

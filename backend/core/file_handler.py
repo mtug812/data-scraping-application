@@ -17,7 +17,6 @@ def scraped_data_to_txt_file(scrape_result):
     with open(DATA_FILE_TXT, "w", encoding="utf-8") as file:
         file.write(scrape_result)
 
-
 # Serve TXT file for download
 # this part is a frontend part
 def get_txt_file():
