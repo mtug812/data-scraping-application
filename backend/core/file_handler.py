@@ -1,3 +1,9 @@
+"""
+This module provides functionality for handling scraped data files in a Flask application.
+It includes functions to write raw HTML content to a text file and to serve the text file
+for download.
+"""
+
 import os
 from flask import send_file, jsonify
 
@@ -16,6 +22,7 @@ def scraped_data_to_txt_file(scrape_result):
     """
     with open(DATA_FILE_TXT, "w", encoding="utf-8") as file:
         file.write(scrape_result)
+
 
 # Serve TXT file for download
 # this part is a frontend part
