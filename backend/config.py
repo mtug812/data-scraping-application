@@ -30,10 +30,10 @@ CORS(app)
 load_dotenv()
 
 # Database configuration
+# kept here to test and run the backend for frontend devs - since they don't have the .env file
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("database_uri")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-# app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "default-secret-key")
 
 
 db = SQLAlchemy(app)  # create a database instance

@@ -1,9 +1,11 @@
 """
 This module provides a Flask web application for scraping static
 websites and saving the output to a TXT file.
-It includes endpoints for scraping a website, downloading the scraped content as a TXT file, user authentication, and managing user history.
+It includes endpoints for scraping a website, downloading the scraped content as a TXT file, user
+authentication, and managing user history.
 Endpoints:
-- /scrape (POST): Scrapes a static website using the specified method (requests or bs4) and saves the output to a TXT file.
+- /scrape (POST): Scrapes a static website using the specified method (requests or bs4) and saves
+the output to a TXT file.
 - /download/txt (GET): Downloads the scraped content as a TXT file.
 - /login (GET): Authenticates a user and starts a session.
 - /logout (GET): Logs out the current user.
@@ -95,6 +97,21 @@ def download_txt():
 
 @app.route("/login", methods=["GET"])
 def login():
+    """
+    Handles the login route for the application.
+    This function processes a login request by extracting the email and password
+    from the request JSON payload. It then checks if a user with the provided email
+    exists in the database. If the user exists, it verifies the password. If the
+    password is correct, the user is logged in and a success message is returned.
+    Otherwise, an error message is returned indicating the issue.
+    Returns:
+        Response: A JSON response with a success message if login is successful,
+                  or an error message if the email does not exist or the password
+                  is incorrect.
+        JSON response with a status key:
+        - status: 1 -> success
+        - status: 2 -> error
+    """
     email = request.json.get("email")
     password = request.json.get("password")
 
@@ -102,22 +119,45 @@ def login():
     if user:
         if check_password_hash(user.password, password):
             login_user(user, remember=True)
-            return jsonify({"message": "Logged in successfully!"})
+            return jsonify({"message": "Logged in successfully!", "status": 1})
         else:
-            return jsonify({"error": "Incorrect password, try again."})
+            return jsonify({"error": "Incorrect password, try again.", "status": 2})
     else:
-        return jsonify({"error": "Email does not exist."})
+        return jsonify({"error": "Email does not exist.", "status": 2})
 
 
 @app.route("/logout")
 @login_required
 def logout():
+    """
+    Logs out the current user.
+
+    This route is protected by the @login_required decorator, ensuring that only authenticated
+    users can access it.
+    Upon successful logout, the user session is terminated, and a JSON response is returned
+    indicating the logout status.
+
+    Returns:
+        Response: A JSON response with a message indicating successful logout.
+    """
     logout_user()
-    return jsonify({"Message": "Logged out successfully."})
+    return jsonify({"Message": "Logged out successfully.", "status": 1})
 
 
 @app.route("/sign-up", methods=["POST"])
 def sign_up():
+    """
+    Handle user sign-up requests.
+    This endpoint allows users to create a new account by providing their email,
+    first name, and password. It performs various validations on the input data
+    and returns appropriate error messages if any validation fails. If the
+    input data is valid, a new user is created, added to the database, and
+    logged in.
+    Returns:
+        Response: A JSON response containing a success message and status code
+        if the account is created successfully, or an error message and status
+        code if any validation fails.
+    """
     email = request.json.get("email")
     first_name = request.json.get("firstName")
     password1 = request.json.get("password1")
@@ -125,15 +165,21 @@ def sign_up():
 
     user = User.query.filter_by(email=email).first()
     if user:
-        return jsonify({"error": "Email already exists."})
+        return jsonify({"error": "Email already exists.", "status": 2})
     elif len(email) < 4:
-        return jsonify({"error": "Email must be greater than 3 characters."})
+        return jsonify(
+            {"error": "Email must be greater than 3 characters.", "status": 2}
+        )
     elif len(first_name) < 2:
-        return jsonify({"error": "First name must be greater than 1 character."})
+        return jsonify(
+            {"error": "First name must be greater than 1 character.", "status": 2}
+        )
     elif password1 != password2:
-        return jsonify({"error": "Passwords don't match."})
+        return jsonify({"error": "Passwords don't match.", "status": 2})
     elif len(password1) < 7:
-        return jsonify({"error": "Password must be at least 7 characters."})
+        return jsonify(
+            {"error": "Password must be at least 7 characters.", "status": 2}
+        )
     else:
         new_user = User(
             email=email,
@@ -143,7 +189,7 @@ def sign_up():
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user, remember=True)
-        return jsonify({"message": "Account created successfully!"})
+        return jsonify({"message": "Account created successfully!", "status": 1})
 
 
 login_manager = LoginManager()
@@ -158,6 +204,20 @@ def load_user(user_id):
 @app.route("/history", methods=["GET"])
 @login_required
 def history():
+    """
+    Fetches and returns the history of scraped data for the currently logged-in user.
+    This endpoint is protected by the @login_required decorator, ensuring that only authenticated
+    users can access it.
+    Returns:
+        Response: A JSON response containing a list of dictionaries, each representing a history
+        record with the following keys:
+            - url (str): The URL that was scraped.
+            - scraped_data (str): The content that was scraped from the URL.
+            - date (str): The date and time when the data was scraped,
+            formatted as "%Y-%m-%d %H:%M:%S".
+        HTTP Status Code:
+            200: If the history is successfully retrieved.
+    """
     user_history = (
         History.query.filter_by(user_id=current_user.id)
         .order_by(History.date.desc())
