@@ -163,7 +163,8 @@ def history():
 
 if __name__ == "__main__":
     with app.app_context():
-        if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
+        if not path.exists("instance/" + "database.db"):
+        # if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
             db.create_all()
             print("Database created!")
         app.run(debug=True)
