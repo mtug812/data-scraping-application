@@ -9,13 +9,6 @@ Endpoints:
 
 """
 
-<<<<<<< HEAD
-from config import app #, db
-from flask import request, jsonify
-
-from core.scraper import scrape_with_bs4, scrape_with_requests
-from core.file_handler import scraped_data_to_txt_file, get_txt_file
-=======
 import os
 from os import path
 from config import app, db
@@ -27,7 +20,6 @@ from core.models import User, History
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_login import login_user, login_required, logout_user, current_user
->>>>>>> origin/signup_login_ali
 
 
 @app.route("/scrape", methods=["POST"])
@@ -35,48 +27,6 @@ def scrape():
     """
     Endpoint to scrape a static website and save the output to a TXT file.
     Expects a JSON body with a "url" key.
-<<<<<<< HEAD
-    """
-    # retrieve the json data from the post request
-    data = request.json
-    print("received data:", data)
-    url = data.get("url")
-    scraping_method = data.get("scraping_method")
-    print(f"Received URL: {url}, Scraping Method: {scraping_method}")
-
-
-    # if no url is provides , return an error with http 400 status(bad request)
-    if not url:
-        return jsonify({"error": "URL is required"}), 400
-    if not scraping_method:
-        return jsonify({"error": "Scraping method is required"}), 400
-
-    if scraping_method == "requests":
-        # call the scrape website func for the scraped result
-        raw_html = scrape_with_requests(url)
-    elif scraping_method == "bs4":
-        # call the scrape website func for the scraped result
-        raw_html = scrape_with_bs4(url)
-    else:
-        return jsonify({"error": "Invalid scraping method"}), 400
-
-    # AICI S-A MODIFICAT:
-    # Verificăm dacă `raw_html` este un dicționar cu eroare și returnăm răspunsul JSON
-    # if isinstance(raw_html, dict) and "error" in raw_html:
-    #     return jsonify(raw_html), 400  # Return JSON error response with status 400
-    
-    # print(f"Saving to file: {type(raw_html)}")  # Afișează tipul de date al `raw_html`
-    # if isinstance(raw_html, dict):
-    #     print(f"Dictionary content: {raw_html}")  # Afișează conținutul dacă e `dict`
-
-    scraped_data_to_txt_file(raw_html)
-
-
-    return (
-        jsonify(
-            {
-                "message": f"URL Scraped with {scraping_method} and content saved to TXT file"
-=======
     json response: status: 1 -> success, if 2 -> error
     """
     print("test")
@@ -107,8 +57,6 @@ def scrape():
         jsonify(
             {
                 "message": f"URL Scraped with {scraping_method} and content saved",
-                "scrape_result": scrape_result,
->>>>>>> origin/signup_login_ali
             }
         ),
         201,
@@ -130,44 +78,6 @@ def download_txt():
     return txt_file
 
 
-<<<<<<< HEAD
-if __name__ == "__main__":
-    with app.app_context():
-       # db.create_all()
-
-        app.run(debug=True)
-
-# def url_to_db(url):
-#     url: str = Url(url=url)
-#     try:
-#         db.session.add(url)
-#         db.session.commit()
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 400
-
-#     return jsonify({"message": "URL stored successfully to database"}), 201
-
-
-# @app.route("/api/urls", methods=["GET"])
-# def get_urls():
-#     urls = Url.query.all()
-#     json_urls = [url.to_json() for url in urls]
-
-#     return jsonify(json_urls)
-
-
-# @app.route("/api/remove_url/<int:id>", methods=["DELETE"])
-# def remove_url(id: int):
-#     url = Url.query.get(id)
-
-#     if not url:
-#         return jsonify({"error": "URL not found"}), 404
-
-#     db.session.delete(url)
-#     db.session.commit()
-
-#     return jsonify({"message": "URL removed successfully"})
-=======
 @app.route("/login", methods=["GET"])
 def login():
     email = request.json.get("email")
@@ -253,8 +163,8 @@ def history():
 
 if __name__ == "__main__":
     with app.app_context():
-        if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
+        if not path.exists("instance/" + "database.db"):
+        # if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
             db.create_all()
             print("Database created!")
         app.run(debug=True)
->>>>>>> origin/signup_login_ali

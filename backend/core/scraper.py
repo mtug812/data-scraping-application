@@ -26,22 +26,6 @@ def scrape_with_requests(url: str):
         # send an http get request to the url
         response = requests.get(url, timeout=10)
         print("Scraping URL with requests...")
-<<<<<<< HEAD
-       
-
-        # Check if the response was successful (status code 200).
-        if response.status_code != 200:
-            print(f"Error: Failed with status {response.status_code}")  # AICI
-            return {"status": "failure", "error": f"Failed to retrieve URL content, status code: {response.status_code}"}
- 
-        
-        # Return the entire HTML content.
-        return response.text
-
-    except requests.exceptions.RequestException as e:
-        # If an error occurs, return a message with the error details.
-        print(f"Request failed: {e}")  # AICI S-A MODIFICAT
-=======
 
         # Check if the response was successful (status code 200).
         if response.status_code != 200:
@@ -58,7 +42,6 @@ def scrape_with_requests(url: str):
 
     except Exception as e:
         # If an error occurs, return a message with the error details.
->>>>>>> origin/signup_login_ali
         return {"status": "failure", "error": f"An error occurred: {e}"}
 
 
@@ -81,12 +64,8 @@ def scrape_with_bs4(url: str):
         if response.status_code != 200:
             return (
                 jsonify(
-<<<<<<< HEAD
-                    {"status": "failure", "error": "Failed to retrieve URL content"}
-=======
                    {"status": "failure",
                     "error": "Failed to retrieve URL content"}
->>>>>>> origin/signup_login_ali
                 ),
                 400,
             )
@@ -98,21 +77,13 @@ def scrape_with_bs4(url: str):
         pretified_html = soup.prettify()
         return pretified_html
 
-<<<<<<< HEAD
-    except requests.exceptions.RequestException as e:
-=======
     except Exception as e:
->>>>>>> origin/signup_login_ali
         # If an error occurs, return a message with the error details.
         return {"status": "failure", "error": f"An error occurred: {e}"}
 
 
 # store the raw scraped data to the database as a BLOB
-<<<<<<< HEAD
-# def raw_html_to_db(pretofied_data):
-=======
 # def scrape_result_to_db(pretofied_data):
->>>>>>> origin/signup_login_ali
 #     raw_scraped_data = Scraped_raw(scraped_raw_data=pretofied_data)
 #     try:
 #         db.session.add(raw_scraped_data)
