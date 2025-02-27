@@ -49,15 +49,14 @@ def scrape():
         scrape_result = scrape_with_bs4(url)
     else:
         return jsonify({"error": "Invalid scraping method", "status": 2}), 400
-      
+
     scraped_data_to_txt_file(scrape_result)
     if current_user.is_authenticated:
         store_user_history(url, scraping_method, scrape_result, current_user.id)
     return (
         jsonify(
             {
-               "message": f"URL Scraped with {scraping_method} and content saved",
-               "scrape_result": scrape_result,
+                "message": f"URL Scraped with {scraping_method} and content saved",
             }
         ),
         201,
@@ -144,15 +143,17 @@ def load_user(user_id):
 @app.route("/history", methods=["GET"])
 @login_required
 def history():
-    user_history = History.query.filter_by(
-      user_id=current_user.id).order_by(History.date.desc()).all()
+    user_history = (
+        History.query.filter_by(user_id=current_user.id)
+        .order_by(History.date.desc())
+        .all()
+    )
 
     history_list = [
         {
             "url": record.url,
             "scraped_data": record.content,
-            "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date
-            else None
+            "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date else None,
         }
         for record in user_history
     ]
