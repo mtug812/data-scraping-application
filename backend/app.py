@@ -1,12 +1,14 @@
 """
 This module provides a Flask web application for scraping static
 websites and saving the output to a TXT file.
-It includes endpoints for scraping a website,
-downloading the scraped content as a TXT file, and managing URLs in a database.
+It includes endpoints for scraping a website, downloading the scraped content as a TXT file, user authentication, and managing user history.
 Endpoints:
-- /scrape_with_bs4 (POST): Scrapes a static website and returns the raw HTML.
-- /download/txt (GET): Downloads the scraped HTML content as a TXT file.
-
+- /scrape (POST): Scrapes a static website using the specified method (requests or bs4) and saves the output to a TXT file.
+- /download/txt (GET): Downloads the scraped content as a TXT file.
+- /login (GET): Authenticates a user and starts a session.
+- /logout (GET): Logs out the current user.
+- /sign-up (POST): Registers a new user.
+- /history (GET): Retrieves the scraping history of the logged-in user.
 """
 
 import os
@@ -25,11 +27,24 @@ from flask_login import login_user, login_required, logout_user, current_user
 @app.route("/scrape", methods=["POST"])
 def scrape():
     """
-    Endpoint to scrape a static website and save the output to a TXT file.
-    Expects a JSON body with a "url" key.
-    json response: status: 1 -> success, if 2 -> error
+    Expects a JSON body with the following keys:
+    - "url": The URL of the website to scrape (required).
+    - "scraping_method": The method to use for scraping, either "requests" or "bs4" (required).
+    Returns:
+    - JSON response with a status key:
+        - status: 1 -> success
+        - status: 2 -> error
+    - HTTP status code:
+        - 201 on success
+        - 400 on error
+    The function performs the following steps:
+    1. Retrieves the JSON data from the POST request.
+    2. Validates the presence of "url" and "scraping_method" in the JSON body.
+    3. Calls the appropriate scraping function based on the "scraping_method".
+    4. Saves the scraped data to a TXT file.
+    5. If the user is authenticated, stores the scraping history.
+    6. Returns a JSON response indicating the result of the operation.
     """
-    print("test")
     # retrieve the json data from the post request
     data = request.json
     url = data.get("url")
@@ -163,8 +178,7 @@ def history():
 
 if __name__ == "__main__":
     with app.app_context():
-        if not path.exists("instance/" + "database.db"):
-        # if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
+        if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
             db.create_all()
             print("Database created!")
         app.run(debug=True)
