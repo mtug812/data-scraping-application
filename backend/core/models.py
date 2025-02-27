@@ -1,3 +1,11 @@
+"""
+This module defines the History model for the data scraping application.
+
+The History model represents a record of a web scraping activity, including the URL scraped,
+the method used for scraping, the data obtained, the date of the scraping,
+and the user who performed the scraping.
+"""
+
 from config import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
