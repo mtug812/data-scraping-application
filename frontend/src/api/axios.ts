@@ -36,6 +36,18 @@ export const downloadFile = async(url:string, filename:string) =>{
       
     }
 }  
+export const previewFile = async (url: string): Promise<string> => {
+  try {
+    const response = await axios.get(url, { responseType: 'blob' });
+    // Convertim blob-ul primit în text
+    const fileText = await response.data.text();
+    return fileText;
+  } catch (error) {
+    console.error("Preview error: ", error);
+    throw error;
+  }
+};
+
 export default sendAxiosRequest;
 
 

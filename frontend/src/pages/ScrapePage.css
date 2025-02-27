@@ -31,7 +31,7 @@ h2 {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    color: rgb(240, 244, 245);
+    color: rgb(0, 0, 0);
     font-size: 15px;
    
 }
@@ -53,7 +53,7 @@ h2 {
     bottom: 0;           /* ganz unten */
     left: 0;             /* ganz links */
     padding: 10px;       /* optionaler Innenabstand */
-    color: #fff;         /* Textfarbe weiß (optional) */
+    color: #111111;         /* Textfarbe weiß (optional) */
     font-size: 14px;     /* Schriftgröße (optional) */
     z-index: 100;        /* Damit es über anderen Elementen steht */
   }
