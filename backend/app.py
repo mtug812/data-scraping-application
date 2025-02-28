@@ -18,7 +18,7 @@ from os import path
 from config import app, db
 from flask import request, jsonify
 from core.scraper import scrape_with_bs4, scrape_with_requests
-from core.file_handler import scraped_data_to_txt_file, get_txt_file
+from core.file_handler import save_scraped_data, get_txt_file
 from core.repository import store_user_history
 from core.models import User, History
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -67,7 +67,7 @@ def scrape():
     else:
         return jsonify({"error": "Invalid scraping method", "status": 2}), 400
 
-    scraped_data_to_txt_file(scrape_result)
+    save_scraped_data(scrape_result)
     if current_user.is_authenticated:
         store_user_history(url, scraping_method, scrape_result, current_user.id)
     return (
@@ -95,7 +95,7 @@ def download_txt():
     return txt_file
 
 
-@app.route("/login", methods=["GET"])
+@app.route("/login", methods=["POST"])
 def login():
     """
     Handles the login route for the application.
