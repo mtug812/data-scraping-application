@@ -27,15 +27,11 @@ CORS(app)
 
 # Load environment variables from .env file
 load_dotenv()
-# app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-app.config["SECRET_KEY"] = "mykey"
-print(os.getenv("SECRET_KEY"))
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # Database configuration
-# kept here to test and run the backend for frontend devs - since they don't have the .env file
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
-# database_uri = os.getenv("DATABASE_URI", "sqlite:///database.db")
-# app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
+database_uri = os.getenv("DATABASE_URI")
+app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 
