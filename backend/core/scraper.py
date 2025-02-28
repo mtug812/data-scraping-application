@@ -31,7 +31,8 @@ def scrape_with_requests(url: str):
         if response.status_code != 200:
             return (
                 jsonify(
-                    {"status": "failure", "error": "Failed to retrieve URL content"}
+                   {"status": "failure", "error":
+                    "Failed to retrieve URL content"}
                 ),
                 400,
             )
@@ -39,7 +40,7 @@ def scrape_with_requests(url: str):
         # Return the entire HTML content.
         return response.text
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         # If an error occurs, return a message with the error details.
         return {"status": "failure", "error": f"An error occurred: {e}"}
 
@@ -63,7 +64,8 @@ def scrape_with_bs4(url: str):
         if response.status_code != 200:
             return (
                 jsonify(
-                    {"status": "failure", "error": "Failed to retrieve URL content"}
+                   {"status": "failure",
+                    "error": "Failed to retrieve URL content"}
                 ),
                 400,
             )
@@ -75,13 +77,13 @@ def scrape_with_bs4(url: str):
         pretified_html = soup.prettify()
         return pretified_html
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         # If an error occurs, return a message with the error details.
         return {"status": "failure", "error": f"An error occurred: {e}"}
 
 
 # store the raw scraped data to the database as a BLOB
-# def raw_html_to_db(pretofied_data):
+# def scrape_result_to_db(pretofied_data):
 #     raw_scraped_data = Scraped_raw(scraped_raw_data=pretofied_data)
 #     try:
 #         db.session.add(raw_scraped_data)

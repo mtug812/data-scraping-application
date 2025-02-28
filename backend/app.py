@@ -1,26 +1,51 @@
 """
 This module provides a Flask web application for scraping static
 websites and saving the output to a TXT file.
-It includes endpoints for scraping a website,
-downloading the scraped content as a TXT file, and managing URLs in a database.
+It includes endpoints for scraping a website, downloading the scraped content as a TXT file, user
+authentication, and managing user history.
 Endpoints:
-- /scrape_with_bs4 (POST): Scrapes a static website and returns the raw HTML.
-- /download/txt (GET): Downloads the scraped HTML content as a TXT file.
-
+- /scrape (POST): Scrapes a static website using the specified method (requests or bs4) and saves
+the output to a TXT file.
+- /download/txt (GET): Downloads the scraped content as a TXT file.
+- /login (GET): Authenticates a user and starts a session.
+- /logout (GET): Logs out the current user.
+- /sign-up (POST): Registers a new user.
+- /history (GET): Retrieves the scraping history of the logged-in user.
 """
 
+import os
+from os import path
 from config import app, db
 from flask import request, jsonify
-
 from core.scraper import scrape_with_bs4, scrape_with_requests
 from core.file_handler import scraped_data_to_txt_file, get_txt_file
+from core.repository import store_user_history
+from core.models import User, History
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager
+from flask_login import login_user, login_required, logout_user, current_user
 
 
 @app.route("/scrape", methods=["POST"])
 def scrape():
     """
-    Endpoint to scrape a static website and save the output to a TXT file.
-    Expects a JSON body with a "url" key.
+    Expects a JSON body with the following keys:
+    - "url": The URL of the website to scrape (required).
+    - "scraping_method": The method to use for scraping, either "requests" or "bs4" (required).
+    Returns:
+    - JSON response with a status key:
+        - status: 1 -> success
+        - status: 2 -> error
+    - HTTP status code:
+        - 201 on success
+        - 400 on error
+    The function performs the following steps:
+    1. Retrieves the JSON data from the POST request.
+    2. Validates the presence of "url" and "scraping_method" in the JSON body.
+    3. Calls the appropriate scraping function based on the "scraping_method".
+    4. Saves the scraped data to a TXT file.
+    5. If the user is authenticated, stores the scraping history.
+    6. Returns a JSON response indicating the result of the operation.
     """
     # retrieve the json data from the post request
     data = request.json
@@ -29,25 +54,27 @@ def scrape():
 
     # if no url is provides , return an error with http 400 status(bad request)
     if not url:
-        return jsonify({"error": "URL is required"}), 400
+        return jsonify({"error": "URL is required", "status": 2}), 400
     if not scraping_method:
-        return jsonify({"error": "Scraping method is required"}), 400
+        return jsonify({"error": "Scraping method is required", "status": 2}), 400
 
     if scraping_method == "requests":
         # call the scrape website func for the scraped result
-        raw_html = scrape_with_requests(url)
+        scrape_result = scrape_with_requests(url)
     elif scraping_method == "bs4":
         # call the scrape website func for the scraped result
-        raw_html = scrape_with_bs4(url)
+        scrape_result = scrape_with_bs4(url)
     else:
-        return jsonify({"error": "Invalid scraping method"}), 400
+        return jsonify({"error": "Invalid scraping method", "status": 2}), 400
 
-    scraped_data_to_txt_file(raw_html)
-
+    scraped_data_to_txt_file(scrape_result)
+    if current_user.is_authenticated:
+        store_user_history(url, scraping_method, scrape_result, current_user.id)
     return (
         jsonify(
             {
-                "message": f"URL Scraped with {scraping_method} and content saved to TXT file"
+                "message": f"URL Scraped with {scraping_method} and content saved",
+                "status": 1,
             }
         ),
         201,
@@ -69,39 +96,150 @@ def download_txt():
     return txt_file
 
 
+@app.route("/login", methods=["POST"])
+def login():
+    """
+    Handles the login route for the application.
+    This function processes a login request by extracting the email and password
+    from the request JSON payload. It then checks if a user with the provided email
+    exists in the database. If the user exists, it verifies the password. If the
+    password is correct, the user is logged in and a success message is returned.
+    Otherwise, an error message is returned indicating the issue.
+    Returns:
+        Response: A JSON response with a success message if login is successful,
+                  or an error message if the email does not exist or the password
+                  is incorrect.
+        JSON response with a status key:
+        - status: 1 -> success
+        - status: 2 -> error
+    """
+    email = request.json.get("email")
+    password = request.json.get("password")
+
+    user = User.query.filter_by(email=email).first()
+    if user:
+        if check_password_hash(user.password, password):
+            login_user(user, remember=True)
+            return jsonify({"message": "Logged in successfully!", "status": 1})
+        else:
+            return jsonify({"error": "Incorrect password, try again.", "status": 2})
+    else:
+        return jsonify({"error": "Email does not exist.", "status": 2})
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    """
+    Logs out the current user.
+
+    This route is protected by the @login_required decorator, ensuring that only authenticated
+    users can access it.
+    Upon successful logout, the user session is terminated, and a JSON response is returned
+    indicating the logout status.
+
+    Returns:
+        Response: A JSON response with a message indicating successful logout.
+    """
+    logout_user()
+    return jsonify({"Message": "Logged out successfully.", "status": 1})
+
+
+@app.route("/sign-up", methods=["POST"])
+def sign_up():
+    """
+    Handle user sign-up requests.
+    This endpoint allows users to create a new account by providing their email,
+    first name, and password. It performs various validations on the input data
+    and returns appropriate error messages if any validation fails. If the
+    input data is valid, a new user is created, added to the database, and
+    logged in.
+    Returns:
+        Response: A JSON response containing a success message and status code
+        if the account is created successfully, or an error message and status
+        code if any validation fails.
+    """
+    email = request.json.get("email")
+    first_name = request.json.get("firstName")
+    password = request.json.get("password")
+    repeat_password = request.json.get("repeat_password")
+
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return jsonify({"error": "Email already exists.", "status": 2})
+    elif len(email) < 4:
+        return jsonify(
+            {"error": "Email must be greater than 3 characters.", "status": 2}
+        )
+    elif len(first_name) < 2:
+        return jsonify(
+            {"error": "First name must be greater than 1 character.", "status": 2}
+        )
+    elif password != repeat_password:
+        return jsonify({"error": "Passwords don't match.", "status": 2})
+    elif len(password) < 7:
+        return jsonify(
+            {"error": "Password must be at least 7 characters.", "status": 2}
+        )
+    else:
+        new_user = User(
+            email=email,
+            first_name=first_name,
+            password=generate_password_hash(password, method="pbkdf2:sha256"),
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        # login_user(new_user, remember=True)
+        return jsonify({"message": "Account created successfully!", "status": 1})
+
+
+@app.route("/history", methods=["GET"])
+@login_required
+def history():
+    """
+    Fetches and returns the history of scraped data for the currently logged-in user.
+    This endpoint is protected by the @login_required decorator, ensuring that only authenticated
+    users can access it.
+    Returns:
+        Response: A JSON response containing a list of dictionaries, each representing a history
+        record with the following keys:
+            - url (str): The URL that was scraped.
+            - scraped_data (str): The content that was scraped from the URL.
+            - date (str): The date and time when the data was scraped,
+            formatted as "%Y-%m-%d %H:%M:%S".
+        HTTP Status Code:
+            200: If the history is successfully retrieved.
+    """
+    user_history = (
+        History.query.filter_by(user_id=current_user.id)
+        .order_by(History.date.desc())
+        .all()
+    )
+
+    history_list = [
+        {
+            "url": record.url,
+            "scraped_data": record.content,
+            "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date else None,
+        }
+        for record in user_history
+    ]
+
+    return jsonify(history_list), 200
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()
-
+        if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
+            db.create_all()
+            print("Database created!")
         app.run(debug=True)
-
-# def url_to_db(url):
-#     url: str = Url(url=url)
-#     try:
-#         db.session.add(url)
-#         db.session.commit()
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 400
-
-#     return jsonify({"message": "URL stored successfully to database"}), 201
-
-
-# @app.route("/api/urls", methods=["GET"])
-# def get_urls():
-#     urls = Url.query.all()
-#     json_urls = [url.to_json() for url in urls]
-
-#     return jsonify(json_urls)
-
-
-# @app.route("/api/remove_url/<int:id>", methods=["DELETE"])
-# def remove_url(id: int):
-#     url = Url.query.get(id)
-
-#     if not url:
-#         return jsonify({"error": "URL not found"}), 404
-
-#     db.session.delete(url)
-#     db.session.commit()
-
-#     return jsonify({"message": "URL removed successfully"})
