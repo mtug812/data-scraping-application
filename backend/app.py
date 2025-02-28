@@ -74,6 +74,7 @@ def scrape():
         jsonify(
             {
                 "message": f"URL Scraped with {scraping_method} and content saved",
+                "status": 1,
             }
         ),
         201,
@@ -95,7 +96,7 @@ def download_txt():
     return txt_file
 
 
-@app.route("/login", methods=["GET"])
+@app.route("/login", methods=["POST"])
 def login():
     """
     Handles the login route for the application.
@@ -160,8 +161,8 @@ def sign_up():
     """
     email = request.json.get("email")
     first_name = request.json.get("firstName")
-    password1 = request.json.get("password1")
-    password2 = request.json.get("password2")
+    password = request.json.get("password")
+    repeat_password = request.json.get("repeat_password")
 
     user = User.query.filter_by(email=email).first()
     if user:
@@ -174,9 +175,9 @@ def sign_up():
         return jsonify(
             {"error": "First name must be greater than 1 character.", "status": 2}
         )
-    elif password1 != password2:
+    elif password != repeat_password:
         return jsonify({"error": "Passwords don't match.", "status": 2})
-    elif len(password1) < 7:
+    elif len(password) < 7:
         return jsonify(
             {"error": "Password must be at least 7 characters.", "status": 2}
         )
@@ -184,21 +185,12 @@ def sign_up():
         new_user = User(
             email=email,
             first_name=first_name,
-            password=generate_password_hash(password1, method="pbkdf2:sha256"),
+            password=generate_password_hash(password, method="pbkdf2:sha256"),
         )
         db.session.add(new_user)
         db.session.commit()
-        login_user(new_user, remember=True)
+        # login_user(new_user, remember=True)
         return jsonify({"message": "Account created successfully!", "status": 1})
-
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 
 @app.route("/history", methods=["GET"])
@@ -236,8 +228,18 @@ def history():
     return jsonify(history_list), 200
 
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
 if __name__ == "__main__":
     with app.app_context():
+        # if not path.exists("instance/" + "database.db"):
         if not path.exists("instance/" + str(os.getenv("DATABASE_NAME"))):
             db.create_all()
             print("Database created!")
