@@ -3,14 +3,13 @@ import { RadioOption } from "../const/types";
 
 
 
-//props de componenta
+
 type RadioButtonsProps = {
   setter: Dispatch<SetStateAction<RadioOption>>; //
   getter: string;
 };
-// type casting - conversie de la un tip de date la altul
-//react functional component <aici ia type declarat sus> 
-//
+
+
 const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) => {
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
