@@ -1,0 +1,43 @@
+body {
+    margin: 0;
+}
+
+.nav {
+    color: rgb(82, 116, 196);
+    font-size: 15px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 10px; 
+    width: 100%;
+    height: 50px;
+    position: absolute;
+    top: 100px;
+    left: 0;
+}
+
+.nav ul{
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display:flex;
+    gap: 10px;
+}
+
+.nav a {
+    color: inherit;
+    text-decoration: none;
+    height: 100%;
+    display: block;
+    padding: 10px 15px;
+    
+}
+
+
+.nav li.active {
+    background-color: lightgray;
+}
+
+.nav li:hover {
+    background-color: lightgray;
+}

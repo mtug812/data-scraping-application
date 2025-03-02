@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import RadioButtonsExample from '../components/RadioButtonsExample';
 import "./ScrapePage.css"
+import "../components/Navbar";
 
 //import PDButtons from '../components/PDButtons';
 //import "../stylers/PDButtons.css";
 import sendAxiosRequest, { downloadFile, previewFile } from '../api/axios';
 //import { downloadAsTxt } from '../const/utils';
 import { RadioOption } from '../const/types';
+import Navbar from '../components/Navbar';
 
 
 
@@ -66,13 +68,13 @@ const ScrapePage: React.FC = () => {
   // We return the JSX structure of the component
   return (
     // Create a container with Tailwind classes for appearance (min-height, background, padding)
-    <div className=" min-h-screen bg-gray-100 p-4 flex flex-col items-center pt-20">
+    <div className=" min-h-screen bg-gray-100 p-4 flex flex-col items-center">
       {/* Main page title */}
       <h1 style={{outline:"2px",width:"100%"}}className="text-2xl font-bold mb-4 text-center">
         Web Scraping Made Simple
       <h2 className="m-0">Extract and clean web data</h2>
       </h1>
-      
+      <Navbar>{/* Hier wird die Navbar eingefügt und angezeigt */}</Navbar>
        {/* Input section where the user enters the URL */}
        <div className="inputContainer w-full max-w-md text-left">
         <h3 className="block mb-2 font-bold">Website URL:</h3>
@@ -126,11 +128,3 @@ const ScrapePage: React.FC = () => {
 
 // Export component to be used elsewhere in the application
 export default ScrapePage;
-
-//settings pt onclick +text
-
-//css separat
-
-//<PDButtons></PDButtons>
-
-//PDButtons aufrufen!!

@@ -16,6 +16,7 @@ h1 {
     top: 0;
     left: 0;
     margin: 0;
+    margin-bottom: 0px;
 }
 
 
@@ -25,6 +26,7 @@ h2 {
     font-size: 15px;
     padding: 0px;
     gap: 0px;
+    margin-bottom: 0;
 }
 .inputContainer {
     
@@ -36,25 +38,28 @@ h2 {
    
 }
 
+
 .scrapeButton {
     margin-top: 24px; 
-    padding: 8px 16px;       /* optional für eine bessere Optik */
-    background-color: rgb(82, 116, 196);/* optional, wenn du schwarzen Hintergrund willst */
-    color: white;            /* optional, weiße Textfarbe */
-    border-radius: 5px;      /* abgerundete Ecken */
-    cursor: pointer;        /* Cursor ändert sich bei Hover */
+    padding: 8px 16px;       
+    background-color: rgb(82, 116, 196);
+    color: white;            
+    border-radius: 5px;      
+    cursor: pointer;        
     width: 30vw;
   }
   
 
 
 .footer {
-    position: fixed;     /* bleibt fixiert am Bildschirmrand */
-    bottom: 0;           /* ganz unten */
-    left: 0;             /* ganz links */
-    padding: 10px;       /* optionaler Innenabstand */
-    color: #111111;         /* Textfarbe weiß (optional) */
-    font-size: 14px;     /* Schriftgröße (optional) */
-    z-index: 100;        /* Damit es über anderen Elementen steht */
+    background-color: rgb(82, 116, 196);
+    width: 100vw;
+    position: fixed;     
+    bottom: 0;           
+    left: 0;             
+    padding: 10px;       
+    color: white;         
+    font-size: 14px;     
+    z-index: 100;        
   }
   
