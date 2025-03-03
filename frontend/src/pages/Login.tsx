@@ -30,9 +30,11 @@ const Login = () => {
       if (response.data.status === 1) {
         // Login successful
         // Store authentication status in localStorage
-        localStorage.setItem("authToken",response.data.token);
-        localStorage.setItem("isAuthenticated", "true");
-        
+        localStorage.setItem("authToken",response.data.token); // salvez tokenul in authToken
+        localStorage.setItem("isAuthenticated", "true"); //salvez true in isAuthenticated
+        //config axios to include token in future req
+        //seteaza automat pentru cererile viitoare efectuate cu axios
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`; 
         // Redirect to dashboard or home page
         navigate("/");
       } else {

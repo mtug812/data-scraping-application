@@ -5,11 +5,31 @@
  * @param {string} filename 
  */
 export function downloadAsTxt(text:string, filename:string) {
+<<<<<<< HEAD
     
   const blob = new Blob([text], { type: 'text/plain' });
   
  
   const url = URL.createObjectURL(blob);
+=======
+    
+    const blob = new Blob([text], { type: 'text/plain' });
+    
+   
+    const url = URL.createObjectURL(blob);
+  
+   
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+  
+    
+    anchor.click();
+  
+    
+    URL.revokeObjectURL(url);
+  }
+>>>>>>> origin/sprint_three
 
  
   const anchor = document.createElement('a');
