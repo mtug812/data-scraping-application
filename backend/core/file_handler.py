@@ -5,9 +5,13 @@ for download.
 """
 
 import os
+import uuid
 from flask import send_file, jsonify
 
-DATA_FILE_TXT = "scraped_raw_data.txt"
+
+# DATA_FILE_TXT = "scraped_raw_data.txt"
+
+txt_file_name = None
 
 
 def scraped_data_to_txt_file(scrape_result):
@@ -20,8 +24,16 @@ def scraped_data_to_txt_file(scrape_result):
     Returns:
         None
     """
-    with open(DATA_FILE_TXT, "w", encoding="utf-8") as file:
+    # file_name = uuid.uuid4()
+    # print(file_name)
+    global txt_file_name
+    txt_file_name = uuid.uuid4()
+    os.makedirs("txt_files", exist_ok=True)
+    with open(f"txt_files/{txt_file_name}.txt", "w", encoding="utf-8") as file:
         file.write(scrape_result)
+    print(txt_file_name)
+    # with open(DATA_FILE_TXT, "w", encoding="utf-8") as file:
+    #     file.write(scrape_result)
 
 
 # Serve TXT file for download
@@ -41,11 +53,19 @@ def get_txt_file():
         attachment if it exists, or a JSON error message with a 404 status
         code if it doesn't.
     """
-    if os.path.exists(DATA_FILE_TXT):
+    # print(txt_file_name)
+    file_path = f"{txt_file_name}.txt"
+    print(file_path)
+    # print(f"Checking if path exists: {file_path}")
+    # print(os.path.exists(file_path))
+    # print(os.path.exists(f"{txt_file_name}.txt"))
+
+    if os.path.exists(f"txt_files/{txt_file_name}.txt"):
+        print("path exists!!!!!!!!!!!!!")
         return send_file(
-            DATA_FILE_TXT,
+            f"txt_files/{txt_file_name}.txt",
             mimetype="text/plain",
             as_attachment=True,
-            download_name="scraped_raw_data.txt",
+            download_name=f"{txt_file_name}.txt",
         )
     return jsonify({"error": "No scraped data available"}), 404
