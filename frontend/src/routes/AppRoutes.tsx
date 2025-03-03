@@ -1,5 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import ScrapePage from '../pages/ScrapePage';
+import SignUpPage from '../pages/SignUpPage'
+import Login from '../pages/Login'
+
 
 // in this file add routes/pages
 // example <Route path="/login" element={<Login />} /> 
@@ -10,11 +13,8 @@ const AppRoutes = () => {
     <Routes>
       {/* Here declare all pages of the application */}
       <Route path="/" element={<ScrapePage />} />
-
-      {/* 
-        Ex. sixth page without layout:
-        <Route path="/login" element={<Login />} />
-      */}
+      <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/login" element={<Login />} />
     </Routes>
   );
 };

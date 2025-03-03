@@ -76,13 +76,10 @@ const ScrapePage: React.FC = () => {
           onChange={(e) => setUrlInput(e.target.value)} // Update state when user taps
           placeholder="https://example.com"     // Display a placeholder in case the field is goal
         />
-        
       </div>
       
       <RadioButtonsExample setter={setSelectedOption} getter={selectedOption}/>
      
-      
-
       {/* Display error message if any */}
       {error && (
         <div className="text-red-600 mb-2">
