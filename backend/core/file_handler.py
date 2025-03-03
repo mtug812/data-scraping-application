@@ -96,3 +96,4 @@ def get_txt_file():
         )
 
     return jsonify({"error": "No scraped data available"}), 404
+  

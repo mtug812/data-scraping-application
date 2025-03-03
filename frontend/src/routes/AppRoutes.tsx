@@ -1,18 +1,15 @@
 import { Routes, Route } from 'react-router-dom';
 import ScrapePage from '../pages/ScrapePage';
 
-// in fisierul asta adaug rutele/pagini
-// exemplu <Route path="/login" element={<Login />} /> 
-//unde login il creez in pages
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Aici declari toate paginile aplicației */}
+      {/* here we declare the pages */}
       <Route path="/" element={<ScrapePage />} />
-
+      
       {/* 
-        Ex. altă pagină fără layout:
+        login:
         <Route path="/login" element={<Login />} />
       */}
     </Routes>

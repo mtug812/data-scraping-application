@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import RadioButtonsExample from '../components/RadioButtonsExample';
-import "./ScrapePage.css"
-
-//import PDButtons from '../components/PDButtons';
-//import "../stylers/PDButtons.css";
+import {BASE_URL} from '../api/globalvariables'
+import "../stylers/PDButtons.css";
+import "../stylers/ScrapePage.css"
 import sendAxiosRequest, { downloadFile, previewFile } from '../api/axios';
 //import { downloadAsTxt } from '../const/utils';
 import { RadioOption } from '../const/types';
@@ -13,47 +12,39 @@ import { RadioOption } from '../const/types';
 // We define a functional TypeScript component called ScrapePage
 const ScrapePage: React.FC = () => {
   // We define a urlInput state, initialized with a goal string, and a setUrlInput function to modify this state
-  const [urlInput, setUrlInput] = useState('');
-  
+  const [urlInput, setUrlInput] = useState<string|undefined>(undefined);
   // We define an error state, initialized with a goal string, and a setError function to modify this state
-  const [error, setError] = useState('');
-
+  const [error, setError] = useState<string | undefined>(undefined);
   const [selectedOption, setSelectedOption] = useState<RadioOption>("requests");
   const [isScrapingDone, setIsScrapingDone] = useState(false);
-
-   //getter e valoare
-   // setter e functie
   const [scrapedPage, setScrapedPage] = useState<string|null>(null);
   
-
-  // Funcția asincronă care se ocupă de procesul de "scrape"
   const handleScrape = async () => {
     console.log(selectedOption);
     console.log("sending to backend:", {
       url: urlInput,
       scraping_method: selectedOption,
   });
-     if (urlInput === ''){
+     if (!urlInput ){
       window.alert("insert valid url")
       return
      }
-     const response = await sendAxiosRequest("http://127.0.0.1:5000/scrape", {url:urlInput, 
-      scraping_method:selectedOption}) //backend vrea "url" key
+     const response = await sendAxiosRequest(`${BASE_URL}/scrape`, {url:urlInput, 
+      scraping_method:selectedOption})
      if (response){
       console.log(response)
-      //downloadFile("http://127.0.0.1:5000/download/txt", "test.txt")
+     
       setIsScrapingDone(true);
-      //  window.location.href = "http://127.0.0.1:5000/download/txt"
-      //downloadAsTxt(response, "test25feb.txt")
-      setError(''); // Resetăm eroarea înainte de a începe un nou "scrape"
-    // TODO: Aici va fi implementată logica de fetch în viitor (Ticket #4), care va apela un API
-    console.log('Scrape triggered for:', urlInput); // Afișăm în consolă mesajul și valoarea urlInput
+      
+      setError(undefined); 
+    
+    console.log('Scrape triggered for:', urlInput); 
      }
   };
 
   const handlePreview = async () => {
     try {
-      const previewContent = await previewFile("http://127.0.0.1:5000/download/txt");
+      const previewContent = await previewFile(`${BASE_URL}/download/txt`);
       setScrapedPage(previewContent);
     } catch (err) {
       console.error("Error during preview: ", err);
@@ -63,7 +54,7 @@ const ScrapePage: React.FC = () => {
 
 
 
-  // We return the JSX structure of the component
+ 
   return (
     // Create a container with Tailwind classes for appearance (min-height, background, padding)
     <div className=" min-h-screen bg-gray-100 p-4 flex flex-col items-center pt-20">
@@ -100,7 +91,7 @@ const ScrapePage: React.FC = () => {
        {/* Button that triggers the handleScrape function */}
       <button className="scrapeButton" onClick={handleScrape}>Scrape</button>
 
-        {/* Afișăm butoanele doar după ce scraping-ul este finalizat */}
+        {/* show buttons if scrapingDone */}
       {isScrapingDone && (
         <div className="buttonContainer">
           <button onClick={handlePreview}>Preview</button>
@@ -124,13 +115,6 @@ const ScrapePage: React.FC = () => {
   );
 };
 
-// Export component to be used elsewhere in the application
+
 export default ScrapePage;
 
-//settings pt onclick +text
-
-//css separat
-
-//<PDButtons></PDButtons>
-
-//PDButtons aufrufen!!

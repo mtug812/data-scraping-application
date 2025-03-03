@@ -15,6 +15,8 @@ the output to a TXT file.
 
 import os
 from os import path
+from datetime import datetime, timedelta
+from functools import wraps
 from config import app, db
 from flask import request, jsonify
 from core.scraper import scrape_with_bs4, scrape_with_requests
@@ -24,6 +26,39 @@ from core.models import User, History
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_login import login_user, login_required, logout_user, current_user
+import jwt
+
+
+def token_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        token = request.headers.get("Authorization")
+
+        if not token:
+            return jsonify({"Alert!": "Token is missing!"}), 401
+
+        # Ensure token follows "Bearer <token>" format
+        if token.startswith("Bearer "):
+            token = token.split(" ")[1]
+        else:
+            return jsonify({"Alert!": "Invalid token format. Use 'Bearer <token>'"}), 401
+
+        try:
+            jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+        except jwt.ExpiredSignatureError:
+            return jsonify({"Message": "Token expired"}), 401
+        except jwt.DecodeError:
+            return jsonify({"Message": "Invalid token. Unable to decode."}), 401
+
+        return func(*args, **kwargs)
+
+    return decorated
+
+
+@app.route('/auth')
+@token_required
+def auth():
+    return 'JWT is verified. Welcome to your dashboard!'
 
 
 @app.route("/scrape", methods=["POST"])
@@ -74,6 +109,7 @@ def scrape():
         jsonify(
             {
                 "message": f"URL Scraped with {scraping_method} and content saved",
+                "status": 1,
             }
         ),
         201,
@@ -119,7 +155,18 @@ def login():
     if user:
         if check_password_hash(user.password, password):
             login_user(user, remember=True)
-            return jsonify({"message": "Logged in successfully!", "status": 1})
+            token = jwt.encode(
+                {
+                    'user': email,  # Store email in token
+                    'exp': datetime.utcnow() + timedelta(seconds=120)
+                },
+                app.config['SECRET_KEY'],
+                algorithm="HS256"
+            )
+
+            return jsonify({"message": "Logged in successfully!", "status": 1, 'token': token})
+        # we use decode because of the byte string
+
         else:
             return jsonify({"error": "Incorrect password, try again.", "status": 2})
     else:
@@ -128,6 +175,7 @@ def login():
 
 @app.route("/logout")
 @login_required
+@token_required
 def logout():
     """
     Logs out the current user.
@@ -160,8 +208,8 @@ def sign_up():
     """
     email = request.json.get("email")
     first_name = request.json.get("firstName")
-    password1 = request.json.get("password1")
-    password2 = request.json.get("password2")
+    password = request.json.get("password")
+    repeat_password = request.json.get("repeat_password")
 
     user = User.query.filter_by(email=email).first()
     if user:
@@ -174,9 +222,9 @@ def sign_up():
         return jsonify(
             {"error": "First name must be greater than 1 character.", "status": 2}
         )
-    elif password1 != password2:
+    elif password != repeat_password:
         return jsonify({"error": "Passwords don't match.", "status": 2})
-    elif len(password1) < 7:
+    elif len(password) < 7:
         return jsonify(
             {"error": "Password must be at least 7 characters.", "status": 2}
         )
@@ -184,25 +232,17 @@ def sign_up():
         new_user = User(
             email=email,
             first_name=first_name,
-            password=generate_password_hash(password1, method="pbkdf2:sha256"),
+            password=generate_password_hash(password, method="pbkdf2:sha256"),
         )
         db.session.add(new_user)
         db.session.commit()
-        login_user(new_user, remember=True)
+        # login_user(new_user, remember=True)
         return jsonify({"message": "Account created successfully!", "status": 1})
-
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 
 @app.route("/history", methods=["GET"])
 @login_required
+@token_required
 def history():
     """
     Fetches and returns the history of scraped data for the currently logged-in user.
@@ -234,6 +274,15 @@ def history():
     ]
 
     return jsonify(history_list), 200
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 if __name__ == "__main__":
