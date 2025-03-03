@@ -15,15 +15,50 @@ the output to a TXT file.
 
 import os
 from os import path
+from datetime import datetime, timedelta
+from functools import wraps
 from config import app, db
 from flask import request, jsonify
 from core.scraper import scrape_with_bs4, scrape_with_requests
-from core.file_handler import scraped_data_to_txt_file, get_txt_file
+from core.file_handler import save_scraped_data, get_txt_file
 from core.repository import store_user_history
 from core.models import User, History
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_login import login_user, login_required, logout_user, current_user
+import jwt
+
+
+def token_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        token = request.headers.get("Authorization")
+
+        if not token:
+            return jsonify({"Alert!": "Token is missing!"}), 401
+
+        # Ensure token follows "Bearer <token>" format
+        if token.startswith("Bearer "):
+            token = token.split(" ")[1]
+        else:
+            return jsonify({"Alert!": "Invalid token format. Use 'Bearer <token>'"}), 401
+
+        try:
+            jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+        except jwt.ExpiredSignatureError:
+            return jsonify({"Message": "Token expired"}), 401
+        except jwt.DecodeError:
+            return jsonify({"Message": "Invalid token. Unable to decode."}), 401
+
+        return func(*args, **kwargs)
+
+    return decorated
+
+
+@app.route('/auth')
+@token_required
+def auth():
+    return 'JWT is verified. Welcome to your dashboard!'
 
 
 @app.route("/scrape", methods=["POST"])
@@ -67,7 +102,7 @@ def scrape():
     else:
         return jsonify({"error": "Invalid scraping method", "status": 2}), 400
 
-    scraped_data_to_txt_file(scrape_result)
+    save_scraped_data(scrape_result)
     if current_user.is_authenticated:
         store_user_history(url, scraping_method, scrape_result, current_user.id)
     return (
@@ -120,7 +155,18 @@ def login():
     if user:
         if check_password_hash(user.password, password):
             login_user(user, remember=True)
-            return jsonify({"message": "Logged in successfully!", "status": 1})
+            token = jwt.encode(
+                {
+                    'user': email,  # Store email in token
+                    'exp': datetime.utcnow() + timedelta(seconds=120)
+                },
+                app.config['SECRET_KEY'],
+                algorithm="HS256"
+            )
+
+            return jsonify({"message": "Logged in successfully!", "status": 1, 'token': token})
+        # we use decode because of the byte string
+
         else:
             return jsonify({"error": "Incorrect password, try again.", "status": 2})
     else:
@@ -129,6 +175,7 @@ def login():
 
 @app.route("/logout")
 @login_required
+@token_required
 def logout():
     """
     Logs out the current user.
@@ -195,6 +242,7 @@ def sign_up():
 
 @app.route("/history", methods=["GET"])
 @login_required
+@token_required
 def history():
     """
     Fetches and returns the history of scraped data for the currently logged-in user.
