@@ -164,7 +164,8 @@ def login():
                 algorithm="HS256"
             )
 
-            return jsonify({'token': token})  # we use decode because of the byte string
+            return jsonify({"message": "Logged in successfully!", "status": 1, 'token': token})
+        # we use decode because of the byte string
 
         else:
             return jsonify({"error": "Incorrect password, try again.", "status": 2})
