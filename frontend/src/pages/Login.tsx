@@ -26,7 +26,7 @@ const Login = () => {
         email: email,
         password: password,
       });
-
+      console.log(response)
       if (response.data.status === 1) {
         // Login successful
         // Store authentication status in localStorage
