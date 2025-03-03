@@ -49,7 +49,3 @@ def get_txt_file():
             download_name="scraped_raw_data.txt",
         )
     return jsonify({"error": "No scraped data available"}), 404
-
-
-x = 10   # Extra spaces should trigger an error
-print("Hello")  # Extra spaces should also trigger an error
