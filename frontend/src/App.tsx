@@ -2,15 +2,20 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
+import Navbar from './components/Navbar';
 
 
 const App: React.FC = () => {
+
+  console.log("App.tsx is rendering!");
+
   return (
-    // BrowserRouter gestionează navigarea (URL-ul) în toată aplicația
+    // BrowserRouter manages navigation (the URL) throughout the application
     <BrowserRouter>
+    <Navbar />
       {/* 
-        AppRoutes conține toate definițiile de rute;
-        BrowserRouter “ascultă” URL-ul și redă componentele corespunzătoare. 
+        AppRoutes contains all route definitions;
+        BrowserRouter “listens” to the URL and returns the corresponding components.
       */}
       <AppRoutes />
     </BrowserRouter>
