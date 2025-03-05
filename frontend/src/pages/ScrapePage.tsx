@@ -7,7 +7,7 @@ import sendAxiosRequest, { downloadFile, previewFile } from '../api/axios';
 import { RadioOption } from '../const/types';
 import Navbar from '../components/Navbar';
 import "../components/Navbar";
-
+import axios from 'axios';
 
 // We define a functional TypeScript component called ScrapePage
 const ScrapePage: React.FC = () => {
@@ -18,29 +18,32 @@ const ScrapePage: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<RadioOption>("requests");
   const [isScrapingDone, setIsScrapingDone] = useState(false);
   const [scrapedPage, setScrapedPage] = useState<string|null>(null);
+  //am adaugat si asta
+  const [isLoading, setIsLoading] = useState(false);
   
-  const handleScrape = async () => {
-    console.log(selectedOption);
-    console.log("sending to backend:", {
-      url: urlInput,
-      scraping_method: selectedOption,
-  });
-     if (!urlInput ){
-      window.alert("insert valid url")
-      return
-     }
-     const response = await sendAxiosRequest(`${BASE_URL}/scrape`, {url:urlInput, 
-      scraping_method:selectedOption})
-     if (response){
-      console.log(response)
+  const token = localStorage.getItem("authToken");
+  // const handleScrape = async () => {
+  //   console.log(selectedOption);
+  //   console.log("sending to backend:", {
+  //     url: urlInput,
+  //     scraping_method: selectedOption,
+  // });
+  //    if (!urlInput ){
+  //     window.alert("insert valid url")
+  //     return
+  //    }
+  //    const response = await sendAxiosRequest(`${BASE_URL}/scrape`, {url:urlInput, 
+  //     scraping_method:selectedOption})
+  //    if (response){
+  //     console.log(response)
      
-      setIsScrapingDone(true);
+  //     setIsScrapingDone(true);
       
-      setError(undefined); 
+  //     setError(undefined); 
     
-    console.log('Scrape triggered for:', urlInput); 
-     }
-  };
+  //   console.log('Scrape triggered for:', urlInput); 
+  //    }
+  // };
 
   const handlePreview = async () => {
     try {
@@ -52,8 +55,61 @@ const ScrapePage: React.FC = () => {
     }
   };
 
-
-
+  //noua metoda
+  const handleScrape = async () => {
+    if (!urlInput) {
+      setError("Please enter a valid URL");
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      setError(undefined);
+      
+      console.log("Sending to backend:", {
+        url: urlInput,
+        scraping_method: selectedOption,
+      });
+      
+      // const response = await sendAxiosRequest(`${BASE_URL}/scrape`, {
+      //   url: urlInput, 
+      //   scraping_method: selectedOption
+      // });
+      const axiosResponse = await axios.post(
+        `${BASE_URL}/scrape`, 
+        {
+          url: urlInput, 
+          scraping_method: selectedOption
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      const response = axiosResponse.data;
+      if (response && response.status === 1) {
+        console.log("Scraping successful:", response);
+        setIsScrapingDone(true);
+        
+        // Store the scraped result directly from the response
+        setScrapedPage(response.scrape_result);
+        setError(undefined);
+      } else {
+        // Handle error from backend
+        setError(response?.error || "An error occurred during scraping");
+        setIsScrapingDone(false);
+      }
+    } catch (err) {
+      console.error("Error during scraping:", err);
+      setError("Failed to scrape the website. Please try again.");
+      setIsScrapingDone(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+ 
  
   return (
     // Create a container with Tailwind classes for appearance (min-height, background, padding)
@@ -94,7 +150,18 @@ const ScrapePage: React.FC = () => {
       {isScrapingDone && (
         <div className="buttonContainer">
           <button onClick={handlePreview}>Preview</button>
-          <button onClick={() => downloadFile("http://127.0.0.1:5000/download/txt", "test.txt")} style={{marginLeft:'75px'}}>Download</button>
+           <button 
+      onClick={() => {
+        if (scrapedPage) {
+          downloadFile(scrapedPage, `scraped-${new Date().toISOString().slice(0, 10)}.txt`);
+        } else {
+          setError("Nu există conținut pentru descărcare");
+        }
+      }} 
+      style={{marginLeft:'75px'}}
+    >
+      Download
+    </button>
         </div>
       )}
 

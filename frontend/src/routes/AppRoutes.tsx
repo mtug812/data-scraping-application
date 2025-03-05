@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import ScrapePage from '../pages/ScrapePage';
 import SignUpPage from '../pages/SignUpPage'
 import Login from '../pages/Login'
+import HistoryPage from '../pages/HistoryPage';
 
 
 // in this file add routes/pages
@@ -15,6 +16,7 @@ const AppRoutes = () => {
       <Route path="/" element={<ScrapePage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/history" element={<HistoryPage />} />
     </Routes>
   );
 };
