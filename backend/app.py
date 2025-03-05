@@ -19,16 +19,49 @@ from datetime import datetime, timedelta
 from functools import wraps
 from config import app, db
 from flask import request, jsonify
-from core.scraper import scrape_with_bs4, scrape_with_requests
-from core.file_handler import save_scraped_data, get_txt_file
+from core.scraper import (
+    scrape_with_bs4,
+    scrape_with_requests,
+    scrape_with_selenium,
+)
+
+# from core.file_handler import save_scraped_data, get_txt_file
 from core.repository import store_user_history
 from core.models import User, History
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_login import login_user, login_required, logout_user, current_user
 import jwt
+from flask import request, jsonify, g  # Add g here
 
 
+# def token_required(func):
+#     @wraps(func)
+#     def decorated(*args, **kwargs):
+#         token = request.headers.get("Authorization")
+
+#         if not token:
+#             return jsonify({"Alert!": "Token is missing!"}), 401
+
+#         # Ensure token follows "Bearer <token>" format
+#         if token.startswith("Bearer "):
+#             token = token.split(" ")[1]
+#         else:
+#             return (
+#                 jsonify({"Alert!": "Invalid token format. Use 'Bearer <token>'"}),
+#                 401,
+#             )
+
+#         try:
+#             jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+#         except jwt.ExpiredSignatureError:
+#             return jsonify({"Message": "Token expired"}), 401
+#         except jwt.DecodeError:
+#             return jsonify({"Message": "Invalid token. Unable to decode."}), 401
+
+#         return func(*args, **kwargs)
+
+#     return decorated
 def token_required(func):
     @wraps(func)
     def decorated(*args, **kwargs):
@@ -41,94 +74,176 @@ def token_required(func):
         if token.startswith("Bearer "):
             token = token.split(" ")[1]
         else:
-            return jsonify({"Alert!": "Invalid token format. Use 'Bearer <token>'"}), 401
+            return (
+                jsonify({"Alert!": "Invalid token format. Use 'Bearer <token>'"}),
+                401,
+            )
 
         try:
-            jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+            # Decode the token and extract user information
+            payload = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+            print("Token payload:", payload)  # Debug: see what's in the payload
+            
+            # Get the user's email from the token
+            user_email = payload.get('user')
+            if not user_email:
+                return jsonify({"Message": "Invalid token. User information missing."}), 401
+                
+            # Find the user by email
+            user = User.query.filter_by(email=user_email).first()
+            if not user:
+                return jsonify({"Message": "User not found."}), 401
+                
+            # Store user in Flask's g object
+            g.user = user
+            
         except jwt.ExpiredSignatureError:
             return jsonify({"Message": "Token expired"}), 401
         except jwt.DecodeError:
             return jsonify({"Message": "Invalid token. Unable to decode."}), 401
+        except Exception as e:
+            return jsonify({"Message": f"Error: {str(e)}"}), 401
 
         return func(*args, **kwargs)
 
     return decorated
 
 
-@app.route('/auth')
+@app.route("/auth")
 @token_required
 def auth():
-    return 'JWT is verified. Welcome to your dashboard!'
+    return "JWT is verified. Welcome to your dashboard!"
 
 
+# @app.route("/scrape", methods=["POST"])
+# def scrape():
+#     """
+#     Expects a JSON body with the following keys:
+#     - "url": The URL of the website to scrape (required).
+#     - "scraping_method": The method to use for scraping, either "requests" or "bs4" (required).
+#     Returns:
+#     - JSON response with a status key:
+#         - status: 1 -> success
+#         - status: 2 -> error
+#     - HTTP status code:
+#         - 201 on success
+#         - 400 on error
+#     The function performs the following steps:
+#     1. Retrieves the JSON data from the POST request.
+#     2. Validates the presence of "url" and "scraping_method" in the JSON body.
+#     3. Calls the appropriate scraping function based on the "scraping_method".
+#     4. Saves the scraped data to a TXT file.
+#     5. If the user is authenticated, stores the scraping history.
+#     6. Returns a JSON response indicating the result of the operation.
+#     """
+#     # retrieve the json data from the post request
+#     data = request.json
+#     url = data.get("url")
+#     scraping_method = data.get("scraping_method")
+
+#     # if no url is provides , return an error with http 400 status(bad request)
+#     if not url:
+#         return jsonify({"error": "URL is required", "status": 2}), 400
+#     # Ensure the URL starts with "https://"
+#     if url.startswith("www."):
+#         url = "https://" + url[4:]
+
+#     if not scraping_method:
+#         return jsonify({"error": "Scraping method is required", "status": 2}), 400
+
+#     if scraping_method == "requests":
+#         # call the scrape website func for the scraped result
+#         scrape_result = scrape_with_requests(url)
+#     elif scraping_method == "bs4":
+#         # call the scrape website func for the scraped result
+#         scrape_result = scrape_with_bs4(url)
+#     elif scraping_method == "selenium":
+#         # call the scrape website func for the scraped result
+#         scrape_result = scrape_with_selenium(url)
+#     else:
+#         return jsonify({"error": "Invalid scraping method", "status": 2}), 400
+
+#     # save_scraped_data(scrape_result)
+#     if current_user.is_authenticated:
+#         store_user_history(url, scraping_method, scrape_result, g.user.id)
+#     return (
+#         jsonify(
+#             {
+#                 "message": f"URL Scraped with {scraping_method} and content saved",
+#                 "status": 1,
+#                 "scrape_result": scrape_result,  # this contains the scrape_result data
+#             }
+#         ),
+#         201,
+#     )
 @app.route("/scrape", methods=["POST"])
 def scrape():
-    """
-    Expects a JSON body with the following keys:
-    - "url": The URL of the website to scrape (required).
-    - "scraping_method": The method to use for scraping, either "requests" or "bs4" (required).
-    Returns:
-    - JSON response with a status key:
-        - status: 1 -> success
-        - status: 2 -> error
-    - HTTP status code:
-        - 201 on success
-        - 400 on error
-    The function performs the following steps:
-    1. Retrieves the JSON data from the POST request.
-    2. Validates the presence of "url" and "scraping_method" in the JSON body.
-    3. Calls the appropriate scraping function based on the "scraping_method".
-    4. Saves the scraped data to a TXT file.
-    5. If the user is authenticated, stores the scraping history.
-    6. Returns a JSON response indicating the result of the operation.
-    """
     # retrieve the json data from the post request
     data = request.json
     url = data.get("url")
     scraping_method = data.get("scraping_method")
 
-    # if no url is provides , return an error with http 400 status(bad request)
+    # Logica de validare și scraping
     if not url:
         return jsonify({"error": "URL is required", "status": 2}), 400
+    # Ensure the URL starts with "https://"
+    if url.startswith("www."):
+        url = "https://" + url[4:]
+
     if not scraping_method:
         return jsonify({"error": "Scraping method is required", "status": 2}), 400
 
     if scraping_method == "requests":
-        # call the scrape website func for the scraped result
         scrape_result = scrape_with_requests(url)
     elif scraping_method == "bs4":
-        # call the scrape website func for the scraped result
         scrape_result = scrape_with_bs4(url)
+    elif scraping_method == "selenium":
+        scrape_result = scrape_with_selenium(url)
     else:
         return jsonify({"error": "Invalid scraping method", "status": 2}), 400
 
-    save_scraped_data(scrape_result)
-    if current_user.is_authenticated:
-        store_user_history(url, scraping_method, scrape_result, current_user.id)
+    # Verifică dacă există un token valid și salvează istoricul doar în acest caz
+    token = request.headers.get("Authorization")
+    if token and token.startswith("Bearer "):
+        try:
+            token = token.split(" ")[1]
+            payload = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+            user_email = payload.get('user')
+            user = User.query.filter_by(email=user_email).first()
+            
+            if user:
+                print(f"Salvare istoric pentru user_id: {user.id}")
+                store_user_history(url, scraping_method, scrape_result, user.id)
+                print("Istoric salvat cu succes!")
+        except Exception as e:
+            print(f"Eroare la procesarea token-ului: {str(e)}")
+            # Continuă fără a salva istoric
+    
     return (
         jsonify(
             {
                 "message": f"URL Scraped with {scraping_method} and content saved",
                 "status": 1,
+                "scrape_result": scrape_result,
             }
         ),
         201,
     )
 
 
-@app.route("/download/txt", methods=["GET"])
-def download_txt():
-    """
-    Endpoint to download a text file.
+# @app.route("/download/txt", methods=["GET"])
+# def download_txt():
+#     """
+#     Endpoint to download a text file.
 
-    This route handles GET requests to download a text file generated by the
-    get_txt_file function.
+#     This route handles GET requests to download a text file generated by the
+#     get_txt_file function.
 
-    Returns:
-        Response: A Flask response object containing the text file.
-    """
-    txt_file = get_txt_file()
-    return txt_file
+#     Returns:
+#         Response: A Flask response object containing the text file.
+#     """
+#     txt_file = get_txt_file()
+#     return txt_file
 
 
 @app.route("/login", methods=["POST"])
@@ -157,14 +272,16 @@ def login():
             login_user(user, remember=True)
             token = jwt.encode(
                 {
-                    'user': email,  # Store email in token
-                    'exp': datetime.utcnow() + timedelta(seconds=120)
+                    "user": email,  # Store email in token
+                    "exp": datetime.utcnow() + timedelta(hours=1),
                 },
-                app.config['SECRET_KEY'],
-                algorithm="HS256"
+                app.config["SECRET_KEY"],
+                algorithm="HS256",
             )
 
-            return jsonify({"message": "Logged in successfully!", "status": 1, 'token': token})
+            return jsonify(
+                {"message": "Logged in successfully!", "status": 1, "token": token}
+            )
         # we use decode because of the byte string
 
         else:
@@ -175,7 +292,7 @@ def login():
 
 @app.route("/logout")
 @login_required
-@token_required
+# @token_required
 def logout():
     """
     Logs out the current user.
@@ -240,39 +357,69 @@ def sign_up():
         return jsonify({"message": "Account created successfully!", "status": 1})
 
 
+# @app.route("/history", methods=["GET"])
+# #@login_required
+# @token_required
+# def history():
+#     """
+#     Fetches and returns the history of scraped data for the currently logged-in user.
+#     This endpoint is protected by the @login_required decorator, ensuring that only authenticated
+#     users can access it.
+#     Returns:
+#         Response: A JSON response containing a list of dictionaries, each representing a history
+#         record with the following keys:
+#             - url (str): The URL that was scraped.
+#             - scraped_data (str): The content that was scraped from the URL.
+#             - date (str): The date and time when the data was scraped,
+#             formatted as "%Y-%m-%d %H:%M:%S".
+#         HTTP Status Code:
+#             200: If the history is successfully retrieved.
+#     """
+    
+#     user_id = g.current_user_id  # This assumes your @token_required decorator puts user_id here
+    
+#     user_history = (
+#         History.query.filter_by(user_id=user_id)
+#         .order_by(History.date.desc())
+#         .all()
+#     )
+
+#     history_list = [
+#         {
+#             "url": record.url,
+#             "scraped_data": record.scraped_data,
+#             "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date else None,
+#         }
+#         for record in user_history
+#     ]
+
+#     return jsonify(history_list), 200
 @app.route("/history", methods=["GET"])
-@login_required
 @token_required
 def history():
-    """
-    Fetches and returns the history of scraped data for the currently logged-in user.
-    This endpoint is protected by the @login_required decorator, ensuring that only authenticated
-    users can access it.
-    Returns:
-        Response: A JSON response containing a list of dictionaries, each representing a history
-        record with the following keys:
-            - url (str): The URL that was scraped.
-            - scraped_data (str): The content that was scraped from the URL.
-            - date (str): The date and time when the data was scraped,
-            formatted as "%Y-%m-%d %H:%M:%S".
-        HTTP Status Code:
-            200: If the history is successfully retrieved.
-    """
+    print(f"User in g object: {g.user}")
+    print(f"User ID: {g.user.id}")
+    # Temporary debugging code
+    all_records = History.query.all()
+    print(f"Total records in History table: {len(all_records)}")
+    
     user_history = (
-        History.query.filter_by(user_id=current_user.id)
+        History.query.filter_by(user_id=g.user.id)
         .order_by(History.date.desc())
         .all()
     )
-
+    
+    print(f"Found {len(user_history)} history records")
+    
     history_list = [
         {
             "url": record.url,
-            "scraped_data": record.content,
+            "scraped_data": record.scraped_data,
             "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date else None,
         }
         for record in user_history
     ]
-
+    
     return jsonify(history_list), 200
 
 
