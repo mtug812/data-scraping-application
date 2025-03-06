@@ -55,6 +55,7 @@ const SignUpPage: React.FC = () => {
 
         const response = await sendAxiosRequest(`${BASE_URL}/sign-up`, {
             user:userName, 
+            email:email,
             password:password
         });
 
@@ -91,7 +92,7 @@ const SignUpPage: React.FC = () => {
         <h3> Enter E-Mail:</h3>
             <input
                 className="enterEmail"
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
             />
@@ -99,7 +100,7 @@ const SignUpPage: React.FC = () => {
             <h3> Create Password:</h3>
             <input
                 className="createPassword"
-                type="text"
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
@@ -107,7 +108,7 @@ const SignUpPage: React.FC = () => {
              <h3> Confirm Password</h3>
             <input
                 className="confirmPassword"
-                type="text"
+                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
             />  
