@@ -1,12 +1,11 @@
-import { Routes, Route } from 'react-router-dom';
-import ScrapePage from '../pages/ScrapePage';
-import SignUpPage from '../pages/SignUpPage'
-import Login from '../pages/Login'
-import HistoryPage from '../pages/HistoryPage';
-
+import { Routes, Route } from "react-router-dom";
+import ScrapePage from "../pages/ScrapePage";
+import SignUpPage from "../pages/SignUpPage";
+import Login from "../pages/Login";
+import HistoryPage from "../pages/HistoryPage";
 
 // in this file add routes/pages
-// example <Route path="/login" element={<Login />} /> 
+// example <Route path="/login" element={<Login />} />
 //where the login it creates in pages
 
 const AppRoutes = () => {

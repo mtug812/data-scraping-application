@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { BASE_URL } from "../api/globalvariables";
 
 const Login = () => {
   // State variables for managing authentication
-  const [authing, setAuthing] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [authing, setAuthing] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
 
   // Function to handle login with email and password
@@ -26,15 +26,15 @@ const Login = () => {
         email: email,
         password: password,
       });
-      console.log(response)
+      console.log(response);
       if (response.data.status === 1) {
         // Login successful
         // Store authentication status in localStorage
-        localStorage.setItem("authToken",response.data.token); // salvez tokenul in authToken
-        localStorage.setItem("isAuthenticated", "true"); //salvez true in isAuthenticated
+        localStorage.setItem("authToken", response.data.token); 
+        localStorage.setItem("isAuthenticated", "true"); 
         //config axios to include token in future req
-        //seteaza automat pentru cererile viitoare efectuate cu axios
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`; 
+        
+        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
         // Redirect to dashboard or home page
         navigate("/");
       } else {
@@ -44,10 +44,10 @@ const Login = () => {
     } catch (err) {
       // Handle network or server errors
       console.error("Login error:", err);
-      
+
       // Type assertion to treat err as AxiosError
-      const axiosError = err as any;
-      
+      const axiosError = err as AxiosError<{error?: string}>;
+
       if (axiosError.response && axiosError.response.data) {
         setError(axiosError.response.data.error || "An error occurred during login");
       } else {
@@ -87,11 +87,7 @@ const Login = () => {
           </div>
 
           {/* Error message display */}
-          {error && (
-            <div className="w-full bg-red-500 text-white p-3 rounded-md mb-4">
-              {error}
-            </div>
-          )}
+          {error && <div className="w-full bg-red-500 text-white p-3 rounded-md mb-4">{error}</div>}
 
           {/* Input field for email & password */}
           <div className="w-full flex flex-col mb-6">
@@ -107,7 +103,7 @@ const Login = () => {
               placeholder="Password"
               className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 outline-none"
               onKeyPress={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   signInWithEmail();
                 }
               }}

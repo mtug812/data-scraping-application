@@ -1,12 +1,8 @@
-
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import AppRoutes from './routes/AppRoutes';
-
-
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
 
 const App: React.FC = () => {
-
   console.log("App.tsx is rendering!");
 
   return (
@@ -16,4 +12,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App
+export default App;
