@@ -11,7 +11,7 @@ const AppRoutes = () => {
     <Routes>
       {/* Here declare all pages of the application */}
       <Route path="/" element={<ScrapePage />} />
-      <Route path="/signup" element={<SignUpPage/>} />
+      <Route path="/sign-up" element={<SignUpPage/>} />
     
 
       {/* 

@@ -10,7 +10,7 @@ const Navbar: React.FC = () => {
                     <a href="/" className= "homepage"> Homepage </a>
                 </li>
                 <li>
-                    <a href="/" className= "signup"> Sign Up </a>
+                    <a href="/" className= "sign-up"> Sign Up </a>
                 </li>
                 <li>
                     <a href="/" className= "login"> Log In </a>

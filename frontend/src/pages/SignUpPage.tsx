@@ -53,7 +53,7 @@ const SignUpPage: React.FC = () => {
             return;
         }
 
-        const response = await sendAxiosRequest(`${BASE_URL}/signup`, {
+        const response = await sendAxiosRequest(`${BASE_URL}/sign-up`, {
             user:userName, 
             password:password
         });
