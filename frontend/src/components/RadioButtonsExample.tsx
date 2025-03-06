@@ -1,27 +1,18 @@
 import { Dispatch, SetStateAction } from "react";
 import { RadioOption } from "../const/types";
 
-
-
-
 type RadioButtonsProps = {
   setter: Dispatch<SetStateAction<RadioOption>>; //
   getter: string;
 };
 
-
 const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) => {
-
   const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-   setter(event.target.value as RadioOption);
+    setter(event.target.value as RadioOption);
   };
 
   return (
-
-  
     <div className="scrapeOptionsContainer w-full max-w-md text-left">
-      <h3 className="font-bold mb-2">Select scraping options:</h3>
-    
       <label>
         <input
           type="radio"
@@ -35,13 +26,7 @@ const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) =>
       <br />
 
       <label>
-        <input
-          type="radio"
-          name="options"
-          value="bs4"
-          checked={getter === "bs4"}
-          onChange={handleOptionChange}
-        />
+        <input type="radio" name="options" value="bs4" checked={getter === "bs4"} onChange={handleOptionChange} />
         Beautiful Soup
       </label>
       <br />
@@ -57,8 +42,6 @@ const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) =>
         Selenium - dynamic websites
       </label>
     </div>
-    
-    
   );
 };
 

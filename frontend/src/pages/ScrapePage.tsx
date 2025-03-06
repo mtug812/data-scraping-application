@@ -1,120 +1,164 @@
-import React, { useState } from 'react';
-import RadioButtonsExample from '../components/RadioButtonsExample';
-import {BASE_URL} from '../api/globalvariables'
+import React, { useState } from "react";
+import RadioButtonsExample from "../components/RadioButtonsExample";
+import { BASE_URL } from "../api/globalvariables";
 import "../stylers/PDButtons.css";
-import "../stylers/ScrapePage.css"
-import sendAxiosRequest, { downloadFile, previewFile } from '../api/axios';
-//import { downloadAsTxt } from '../const/utils';
-import { RadioOption } from '../const/types';
+import "../stylers/ScrapePage.css";
+import { downloadFile } from "../api/axios";
+import { RadioOption } from "../const/types";
+import Navbar from "../components/Navbar";
+import "../components/Navbar";
+import axios from "axios";
 
-
-
-// We define a functional TypeScript component called ScrapePage
 const ScrapePage: React.FC = () => {
-  // We define a urlInput state, initialized with a goal string, and a setUrlInput function to modify this state
-  const [urlInput, setUrlInput] = useState<string|undefined>(undefined);
-  // We define an error state, initialized with a goal string, and a setError function to modify this state
+  const [urlInput, setUrlInput] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
   const [selectedOption, setSelectedOption] = useState<RadioOption>("requests");
   const [isScrapingDone, setIsScrapingDone] = useState(false);
-  const [scrapedPage, setScrapedPage] = useState<string|null>(null);
-  
-  const handleScrape = async () => {
-    console.log(selectedOption);
-    console.log("sending to backend:", {
-      url: urlInput,
-      scraping_method: selectedOption,
-  });
-     if (!urlInput ){
-      window.alert("insert valid url")
-      return
-     }
-     const response = await sendAxiosRequest(`${BASE_URL}/scrape`, {url:urlInput, 
-      scraping_method:selectedOption})
-     if (response){
-      console.log(response)
-     
-      setIsScrapingDone(true);
-      
-      setError(undefined); 
-    
-    console.log('Scrape triggered for:', urlInput); 
-     }
+  const [scrapedPage, setScrapedPage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPreview, setShowPreview] = useState<boolean>(false);
+  const token = localStorage.getItem("authToken");
+
+  const handlePreview = () => {
+    // Simply show the content we already have without making an API call
+    setShowPreview(true);
   };
 
-  const handlePreview = async () => {
+  const handleScrape = async () => {
+    if (!urlInput) {
+      setError("Please enter a valid URL");
+      return;
+    }
+
     try {
-      const previewContent = await previewFile(`${BASE_URL}/download/txt`);
-      setScrapedPage(previewContent);
+      setIsLoading(true);
+      setError(undefined);
+
+      console.log("Sending to backend:", {
+        url: urlInput,
+        scraping_method: selectedOption,
+      });
+
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const axiosResponse = await axios.post(
+        `${BASE_URL}/scrape`,
+        {
+          url: urlInput,
+          scraping_method: selectedOption,
+        },
+        {
+          headers,
+        },
+      );
+      const response = axiosResponse.data;
+      if (response && response.status === 1) {
+        console.log("Scraping successful:", response);
+        setIsScrapingDone(true);
+        setScrapedPage(response.scrape_result);
+        setError(undefined);
+      } else {
+        setError(response?.error || "An error occurred during scraping");
+        setIsScrapingDone(false);
+      }
     } catch (err) {
-      console.error("Error during preview: ", err);
-      setError("Error fetching preview");
+      console.error("Error during scraping:", err);
+      setError("Failed to scrape the website. Please try again.");
+      setIsScrapingDone(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-
-
- 
   return (
-    // Create a container with Tailwind classes for appearance (min-height, background, padding)
-    <div className=" min-h-screen bg-gray-100 p-4 flex flex-col items-center pt-20">
-      {/* Main page title */}
-      <h1 style={{outline:"2px",width:"100%"}}className="text-2xl font-bold mb-4 text-center">
-        Web Scraping Made Simple
-      <h2 className="m-0">Extract and clean web data</h2>
-      </h1>
-      
-       {/* Input section where the user enters the URL */}
-       <div className="inputContainer w-full max-w-md text-left">
-        <h3 className="block mb-2 font-bold">Website URL:</h3>
-        <input
-          className="border rounded p-2 w-full" // Tailwind class for styling
-          type="text"                           // The input type is text
-          value={urlInput}                      // Input value is urlInput from component state
-          onChange={(e) => setUrlInput(e.target.value)} // Update state when user taps
-          placeholder="https://example.com"     // Display a placeholder in case the field is goal
-        />
-        
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* Header with background */}
+      <div className="w-full bg-blue-600 text-white py-4">
+        <h1 className="text-2xl font-bold text-center mb-1">Web Scraping Made Simple</h1>
+        <h2 className="text-base font-normal text-center">Extract and clean web data</h2>
       </div>
-      
-      <RadioButtonsExample setter={setSelectedOption} getter={selectedOption}/>
-     
-      
 
-      {/* Display error message if any */}
-      {error && (
-        <div className="text-red-600 mb-2">
-          {error}
+      <div className="w-full max-w-2xl mx-auto px-4 pb-16">
+        <Navbar />
+
+        {/* Input section */}
+        <div className="w-full text-left my-4">
+          <h3 className="block mb-2 font-bold">Website URL:</h3>
+          <input
+            className="border rounded p-2 w-full"
+            type="text"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="https://example.com"
+          />
         </div>
-      )}
 
-       {/* Button that triggers the handleScrape function */}
-      <button className="scrapeButton" onClick={handleScrape}>Scrape</button>
-
-        {/* show buttons if scrapingDone */}
-      {isScrapingDone && (
-        <div className="buttonContainer">
-          <button onClick={handlePreview}>Preview</button>
-          <button onClick={() => downloadFile("http://127.0.0.1:5000/download/txt", "test.txt")} style={{marginLeft:'75px'}}>Download</button>
+        <div className="mt-4">
+          <h3 className="block mb-2 font-bold">Select scraping options:</h3>
+          <RadioButtonsExample setter={setSelectedOption} getter={selectedOption} />
         </div>
-      )}
 
-       {/* cannot write if */}
-      {scrapedPage && 
-      <div>
-        <h3>preview scraped page for <i>{urlInput}</i></h3>
-        <textarea name="" id="" value={scrapedPage}/>
+        {/* Error message */}
+        {error && <div className="text-red-600 mb-2">{error}</div>}
+
+        {/* Scrape button */}
+        <button
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full"
+          onClick={handleScrape}
+          disabled={isLoading}
+        >
+          {isLoading ? "Scraping..." : "Scrape"}
+        </button>
+
+        {/* Preview and Download buttons */}
+        {isScrapingDone && (
+          <div className="flex justify-center gap-4 mt-6">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" onClick={handlePreview}>
+              Preview
+            </button>
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={() => {
+                if (scrapedPage) {
+                  // downloadFile(scrapedPage, `scraped-${new Date().toISOString().slice(0, 10)}.txt`);
+                  downloadFile(scrapedPage, urlInput);
+                } else {
+                  setError("No content for downloading");
+                }
+              }}
+            >
+              Download
+            </button>
+          </div>
+        )}
+
+        {/* Preview area */}
+        {showPreview && scrapedPage && (
+          <div className="mt-6 w-full">
+            <h3 className="font-bold mb-2">
+              Preview scraped page for <i>{urlInput}</i>
+            </h3>
+            <textarea
+              value={scrapedPage}
+              readOnly
+              className="w-full min-h-52 border border-gray-300 rounded p-2 font-mono resize-y"
+            />
+          </div>
+        )}
       </div>
-      }
 
-      <footer className='footer'>
-      <p>&copy;{new Date().getFullYear()} Hochschule Augsburg & LNU Student Team Project</p>
-      </footer>
-
+      {/* Footer */}
+      <div className="w-full bg-blue-600 text-white py-2 text-center text-sm mt-auto">
+        &copy;{new Date().getFullYear()} Hochschule Augsburg & LNU Student Team Project
+      </div>
     </div>
   );
 };
 
-
 export default ScrapePage;
-
