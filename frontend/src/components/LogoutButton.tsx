@@ -6,14 +6,11 @@ const LogoutButton = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    
     localStorage.removeItem("authToken");
     localStorage.removeItem("isAuthenticated");
 
-    
     delete axios.defaults.headers.common["Authorization"];
 
-    
     navigate("/login");
   };
 

@@ -4,8 +4,7 @@ import axios from "axios";
 import { BASE_URL } from "../api/globalvariables";
 import { useNavigate } from "react-router-dom";
 
-import { downloadFile} from "../api/axios";
-
+import { downloadFile } from "../api/axios";
 
 interface HistoryRecord {
   url: string;
@@ -20,18 +19,15 @@ const HistoryPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-   
     const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
 
     if (!isAuthenticated) {
-      
       navigate("/login");
       return;
     }
 
     fetchHistory();
   }, [navigate]);
-
 
   const fetchHistory = async () => {
     try {
@@ -76,14 +72,12 @@ const HistoryPage: React.FC = () => {
     } catch (err) {
       console.error("Detailed error:", err);
 
-      
       if (axios.isAxiosError(err) && err.response) {
         console.log("Status:", err.response.status);
         console.log("Headers:", err.response.headers);
         console.log("Data:", err.response.data);
       }
 
-      
       if (err instanceof Error) {
         setError(`Failed to load history: ${err.message}`);
       } else {
@@ -93,7 +87,6 @@ const HistoryPage: React.FC = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="history-page min-h-screen bg-gray-100 p-4 flex flex-col items-center pt-20">
@@ -114,7 +107,6 @@ const HistoryPage: React.FC = () => {
         ) : history.length === 0 ? (
           <div className="text-center">No scraping history found. Start scraping to see your records here!</div>
         ) : (
-          
           <div className="history-list">
             {history.map((record, index) => (
               <div key={index} className="history-item bg-white p-4 rounded shadow mb-4">

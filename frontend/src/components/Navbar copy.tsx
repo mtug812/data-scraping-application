@@ -2,23 +2,18 @@ import "../stylers/Navbar.css";
 import React, { useEffect, useState } from "react";
 import LogoutButton from "./LogoutButton";
 const Navbar: React.FC = () => {
-  
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  
   useEffect(() => {
     const checkAuth = () => {
       const authStatus = localStorage.getItem("isAuthenticated");
       setIsAuthenticated(authStatus === "true");
     };
 
-    
     checkAuth();
 
-    
     window.addEventListener("storage", checkAuth);
 
-    
     return () => {
       window.removeEventListener("storage", checkAuth);
     };

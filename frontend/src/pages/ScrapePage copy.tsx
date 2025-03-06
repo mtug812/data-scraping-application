@@ -3,7 +3,7 @@ import RadioButtonsExample from "../components/RadioButtonsExample";
 import { BASE_URL } from "../api/globalvariables";
 import "../stylers/PDButtons.css";
 import "../stylers/ScrapePage.css";
-import  { downloadFile, previewFile } from "../api/axios";
+import { downloadFile, previewFile } from "../api/axios";
 import { RadioOption } from "../const/types";
 import Navbar from "../components/Navbar";
 import "../components/Navbar";
@@ -99,7 +99,6 @@ const ScrapePage: React.FC = () => {
 
       <Navbar />
 
-
       {/* Input section where the user enters the URL */}
       <div className="inputContainer w-full max-w-md text-left">
         <h3 className="block mb-2 font-bold">Website URL:</h3>
@@ -143,25 +142,24 @@ const ScrapePage: React.FC = () => {
 
       {/* cannot write if */}
       {scrapedPage && (
-  <div>
-    <h3>
-      Preview scraped page for <i>{urlInput}</i>
-    </h3>
-    <textarea
-      value={scrapedPage}
-      style={{
-        width: "100%",
-        minHeight: "200px",
-        border: "1px solid #ccc",
-        borderRadius: "4px",
-        padding: "10px",
-        fontFamily: "monospace",
-        resize: "vertical"
-      }}
-    />
-  </div>
-)}
-
+        <div>
+          <h3>
+            Preview scraped page for <i>{urlInput}</i>
+          </h3>
+          <textarea
+            value={scrapedPage}
+            style={{
+              width: "100%",
+              minHeight: "200px",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              padding: "10px",
+              fontFamily: "monospace",
+              resize: "vertical",
+            }}
+          />
+        </div>
+      )}
 
       <footer className="footer">
         <p>&copy;{new Date().getFullYear()} Hochschule Augsburg & LNU Student Team Project</p>

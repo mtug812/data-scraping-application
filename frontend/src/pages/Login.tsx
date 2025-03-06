@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { BASE_URL } from "../api/globalvariables";
@@ -30,10 +30,10 @@ const Login = () => {
       if (response.data.status === 1) {
         // Login successful
         // Store authentication status in localStorage
-        localStorage.setItem("authToken", response.data.token); 
-        localStorage.setItem("isAuthenticated", "true"); 
+        localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("isAuthenticated", "true");
         //config axios to include token in future req
-        
+
         axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
         // Redirect to dashboard or home page
         navigate("/");
@@ -46,7 +46,7 @@ const Login = () => {
       console.error("Login error:", err);
 
       // Type assertion to treat err as AxiosError
-      const axiosError = err as AxiosError<{error?: string}>;
+      const axiosError = err as AxiosError<{ error?: string }>;
 
       if (axiosError.response && axiosError.response.data) {
         setError(axiosError.response.data.error || "An error occurred during login");

@@ -3,7 +3,7 @@ import RadioButtonsExample from "../components/RadioButtonsExample";
 import { BASE_URL } from "../api/globalvariables";
 import "../stylers/PDButtons.css";
 import "../stylers/ScrapePage.css";
-import { downloadFile} from "../api/axios";
+import { downloadFile } from "../api/axios";
 import { RadioOption } from "../const/types";
 import Navbar from "../components/Navbar";
 import "../components/Navbar";
@@ -19,7 +19,6 @@ const ScrapePage: React.FC = () => {
   const [showPreview, setShowPreview] = useState<boolean>(false);
   const token = localStorage.getItem("authToken");
 
-  
   const handlePreview = () => {
     // Simply show the content we already have without making an API call
     setShowPreview(true);
@@ -81,12 +80,8 @@ const ScrapePage: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-gray-100">
       {/* Header with background */}
       <div className="w-full bg-blue-600 text-white py-4">
-        <h1 className="text-2xl font-bold text-center mb-1">
-          Web Scraping Made Simple
-        </h1>
-        <h2 className="text-base font-normal text-center">
-          Extract and clean web data
-        </h2>
+        <h1 className="text-2xl font-bold text-center mb-1">Web Scraping Made Simple</h1>
+        <h2 className="text-base font-normal text-center">Extract and clean web data</h2>
       </div>
 
       <div className="w-full max-w-2xl mx-auto px-4 pb-16">
@@ -113,7 +108,7 @@ const ScrapePage: React.FC = () => {
         {error && <div className="text-red-600 mb-2">{error}</div>}
 
         {/* Scrape button */}
-        <button 
+        <button
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full"
           onClick={handleScrape}
           disabled={isLoading}
@@ -124,10 +119,7 @@ const ScrapePage: React.FC = () => {
         {/* Preview and Download buttons */}
         {isScrapingDone && (
           <div className="flex justify-center gap-4 mt-6">
-            <button 
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              onClick={handlePreview}
-            >
+            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" onClick={handlePreview}>
               Preview
             </button>
             <button

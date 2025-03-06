@@ -13,8 +13,6 @@ const RadioButtonsExample: React.FC<RadioButtonsProps> = ({ setter, getter }) =>
 
   return (
     <div className="scrapeOptionsContainer w-full max-w-md text-left">
-      
-
       <label>
         <input
           type="radio"
