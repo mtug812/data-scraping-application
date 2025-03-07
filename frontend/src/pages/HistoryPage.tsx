@@ -6,8 +6,11 @@ import { useNavigate } from "react-router-dom";
 
 import { downloadFile } from "../api/axios";
 
+
 interface HistoryRecord {
   url: string;
+  scrape_method?: string;  
+  scraping_method?: string; 
   scraped_data: string;
   date: string;
 }
@@ -66,7 +69,8 @@ const HistoryPage: React.FC = () => {
         withCredentials: true,
       });
 
-      console.log("Response received:", response);
+      
+      
       setHistory(response.data);
       setError(null);
     } catch (err) {
@@ -85,6 +89,27 @@ const HistoryPage: React.FC = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Helper function to get the scraping method, works with multiple field names
+  const getScrapingMethod = (record: HistoryRecord): string => {
+    return record.scrape_method || record.scraping_method || "Unknown";
+  };
+
+  
+  const getMethodStyle = (method: string | undefined): string => {
+    if (!method) return 'bg-gray-100 text-gray-800';
+    
+    switch (method.toLowerCase()) {
+      case 'requests':
+        return 'bg-green-100 text-green-800';
+      case 'bs4':
+        return 'bg-blue-100 text-blue-800';
+      case 'selenium':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -137,6 +162,12 @@ const HistoryPage: React.FC = () => {
                     <h3 className="font-bold text-blue-700 text-lg truncate max-w-xs">{record.url}</h3>
                     <span className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
                       {record.date}
+                    </span>
+                  </div>
+
+                  <div className="mb-3">
+                    <span className={`text-sm px-3 py-1 rounded-full ${getMethodStyle(getScrapingMethod(record))}`}>
+                      Method: {getScrapingMethod(record)}
                     </span>
                   </div>
 
