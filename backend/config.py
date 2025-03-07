@@ -22,20 +22,17 @@ from flask_cors import CORS
 
 
 app = Flask(__name__)  # create an app instance
-# CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
 CORS(app)
 CORS(app, supports_credentials=True)
 
 # Load environment variables from .env file
 load_dotenv()
-app.config["SECRET_KEY"] = "mykey"
-# app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 
 # Database configuration
-# database_uri = os.getenv("DATABASE_URI")
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
-# app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
+database_uri = os.getenv("DATABASE_URI")
+app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)  # create a database instance
