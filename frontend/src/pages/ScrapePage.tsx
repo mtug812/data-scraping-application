@@ -15,6 +15,9 @@ const ScrapePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPreview, setShowPreview] = useState<boolean>(false);
   const token = localStorage.getItem("authToken");
+// Add these new state variables to ScrapePage
+const [cleanData, setCleanData] = useState<boolean>(false);
+const [companyName, setCompanyName] = useState<string>("");
 
   const handlePreview = () => {
     // Simply show the content we already have without making an API call
@@ -26,29 +29,38 @@ const ScrapePage: React.FC = () => {
       setError("Please enter a valid URL");
       return;
     }
-
+  
+    if (selectedOption === "selenium" && !companyName) {
+      setError("Company name is required for Selenium scraping");
+      return;
+    }
+  
     try {
       setIsLoading(true);
       setError(undefined);
-
+  
       console.log("Sending to backend:", {
         url: urlInput,
         scraping_method: selectedOption,
+        clean_data: cleanData,
+        company_name: companyName,
       });
-
+  
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-
+  
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
-
+  
       const axiosResponse = await axios.post(
         `${BASE_URL}/scrape`,
         {
           url: urlInput,
           scraping_method: selectedOption,
+          clean_data: cleanData,
+          company_name: selectedOption === "selenium" ? companyName : undefined,
         },
         {
           headers,
@@ -121,7 +133,14 @@ const ScrapePage: React.FC = () => {
 
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Select scraping options:</h3>
-              <RadioButtonsExample setter={setSelectedOption} getter={selectedOption} />
+              <RadioButtonsExample 
+                  setter={setSelectedOption} 
+                  getter={selectedOption} 
+                  cleanData={cleanData}
+                  setCleanData={setCleanData}
+                  companyName={companyName}
+                  setCompanyName={setCompanyName}
+              />
             </div>
 
             {/* Error message */}

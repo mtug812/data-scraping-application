@@ -97,7 +97,7 @@ const Login = () => {
           {/* Input fields -  */}
           <div className="w-full flex flex-col mb-6">
             <div className="mb-6">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-1">Email or Username</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-1">Email</label>
               <input
                 id="email"
                 type="text"
