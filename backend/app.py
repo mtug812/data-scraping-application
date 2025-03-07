@@ -284,14 +284,14 @@ def history():
     )
 
     history_list = [
-        {
-            "url": record.url,
-            "scraped_data": record.scraped_data,
-            "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date else None,
-        }
-        for record in user_history
-    ]
-
+    {
+        "url": record.url,
+        "scrape_method": record.scrape_method,
+        "scraped_data": record.scraped_data,
+        "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date else None,
+    }
+    for record in user_history
+]
     return jsonify(history_list), 200
 
 
