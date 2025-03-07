@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { BASE_URL } from "../api/globalvariables";
-import sendAxiosRequest, { downloadFile, previewFile } from "../api/axios";
-import "../stylers/SignUpPage.css";
+import sendAxiosRequest from "../api/axios";
 import Navbar from "../components/Navbar";
 
 const SignUpPage: React.FC = () => {
@@ -11,7 +10,7 @@ const SignUpPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignUp = async () => {
-    let errors: string[] = []; // Here are the errors stored
+    const errors: string[] = []; // Here are the errors stored
 
     console.log(password);
     console.log("sending to backend:", {
@@ -71,49 +70,72 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    // Create a container with Tailwind classes for appearance (min-height, background, padding)
-    <div className=" min-h-screen bg-gray-100 p-4 flex flex-col items-center pt-20">
-      {/* Main page title */}
-      <h1 style={{ outline: "2px", width: "100%" }} className="text-2xl font-bold mb-4 text-center">
-        Web Scraping Made Simple
-        <h2 className="m-0">Extract and clean web data</h2>
-      </h1>
-
-      <Navbar />
-      <h3>Create Username:</h3>
-      <input
-        className="username"
-        type="text" // The input type is text
-        value={userName} // Input value is urlInput from component state
-        onChange={(e) => setUserName(e.target.value)} // Update state when user taps
-      />
-
-      <h3> Enter E-Mail:</h3>
-      <input className="enterEmail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-
-      <h3> Create Password:</h3>
-      <input
-        className="createPassword"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <h3> Confirm Password</h3>
-      <input
-        className="confirmPassword"
-        type="password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-      />
-
-      <button className="signupButton" onClick={handleSignUp}>
-        Sign-Up
-      </button>
-
-      <footer className="footer">
-        <p>&copy;{new Date().getFullYear()} Hochschule Augsburg & LNU Student Team Project</p>
-      </footer>
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      {/* Header */}
+      <div className="w-full bg-blue-600 text-white py-4">
+        <h1 className="text-2xl font-bold text-center mb-1">Web Scraping Made Simple</h1>
+        <h2 className="text-base font-normal text-center">Extract and clean web data</h2>
+      </div>
+      
+      <div className="w-full px-4 pb-16">
+        <Navbar />
+        
+        <div className="w-full max-w-md mx-auto mt-8">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Create Username:</label>
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Enter E-Mail:</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Create Password:</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Confirm Password:</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <button
+              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition mt-6"
+              onClick={handleSignUp}
+            >
+              Sign-Up
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <div className="w-full bg-blue-600 text-white py-2 text-center text-sm mt-auto">
+        &copy;{new Date().getFullYear()} Hochschule Augsburg & LNU Student Team Project
+      </div>
     </div>
   );
 };

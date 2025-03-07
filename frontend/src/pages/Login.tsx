@@ -57,65 +57,76 @@ const Login = () => {
       setAuthing(false);
     }
   };
-
   return (
-    <div className="w-full h-screen flex">
-      {/* Left half of the screen - info section */}
-      <div className="w-1/2 h-full flex flex-col bg-[#282c34] items-center justify-center">
-        <div className="text-white text-center p-8">
+    <div className="flex min-h-screen w-full">
+      {/* left side */}
+      <div className="w-1/3 bg-blue-600 text-white flex flex-col">
+        <div className="flex-grow flex flex-col items-center justify-center p-8">
           <h2 className="text-3xl font-bold mb-4">Web Scraper App</h2>
           <p className="text-xl mb-6">Extract data from websites with ease</p>
-          <div className="border-t border-gray-600 pt-6 mt-6">
+          
+          <div className="border-t border-blue-400 pt-6 mt-6 w-full">
             <p className="mb-4">Our tool allows you to:</p>
-            <ul className="list-disc list-inside text-left">
-              <li className="mb-2">Scrape content from static websites</li>
-              <li className="mb-2">Save results as text files</li>
-              <li className="mb-2">View your scraping history</li>
-              <li className="mb-2">Choose between different scraping methods</li>
+            <ul className="list-disc list-inside space-y-2">
+              <li>Scrape content from static websites</li>
+              <li>Save results as text files</li>
+              <li>View your scraping history</li>
+              <li>Choose between different scraping methods</li>
             </ul>
           </div>
         </div>
+        
+        {/* Footer */}
+        <div className="py-3 text-center text-sm border-t border-blue-500">
+          &copy;{new Date().getFullYear()} Hochschule Augsburg & LNU Student Team Project
+        </div>
       </div>
 
-      {/* Right half of the screen - login form */}
-      <div className="w-1/2 h-full bg-[#1a1a1a] flex flex-col p-20 justify-center">
+      {/* right side */}
+      <div className="w-2/3 bg-blue-50 flex flex-col p-20 justify-center">
         <div className="w-full flex flex-col max-w-[450px] mx-auto">
-          {/* Header section with title and welcome message */}
-          <div className="w-full flex flex-col mb-10 text-white">
-            <h3 className="text-4xl font-bold mb-2">Login</h3>
+          {/* Header section */}
+          <div className="w-full flex flex-col mb-10 text-gray-800">
+            <h3 className="text-4xl font-bold mb-2 text-blue-700">Login</h3>
             <p className="text-lg mb-4">Welcome Back! Please enter your details.</p>
           </div>
 
           {/* Error message display */}
-          {error && <div className="w-full bg-red-500 text-white p-3 rounded-md mb-4">{error}</div>}
+          {error && <div className="w-full bg-red-100 text-red-600 p-3 rounded-md mb-4 border border-red-200">{error}</div>}
 
-          {/* Input field for email & password */}
+          {/* Input fields -  */}
           <div className="w-full flex flex-col mb-6">
-            <input
-              type="text"
-              placeholder="Email or Username"
-              className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 outline-none"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 outline-none"
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  signInWithEmail();
-                }
-              }}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="mb-6">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-1">Email or Username</label>
+              <input
+                id="email"
+                type="text"
+                className="w-full text-gray-800 py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-600 mb-1">Password</label>
+              <input
+                id="password"
+                type="password"
+                className="w-full text-gray-800 py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    signInWithEmail();
+                  }
+                }}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
           </div>
 
-          {/* Button to login with email and password */}
+          {/* Login button */}
           <div className="w-full flex flex-col mb-4">
             <button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer disabled:opacity-50"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer disabled:opacity-50 transition-colors shadow-sm"
               onClick={signInWithEmail}
               disabled={authing}
             >
@@ -123,11 +134,11 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Link to sign up page */}
+          {/* Sign up link */}
           <div className="w-full flex items-center justify-center mt-10">
-            <p className="text-sm font-normal text-gray-400">
+            <p className="text-sm font-normal text-gray-600">
               Don't have an account?{" "}
-              <span className="font-semibold text-white cursor-pointer underline">
+              <span className="font-semibold text-blue-600 cursor-pointer hover:text-blue-800 transition-colors">
                 <a href="/signup">Sign Up</a>
               </span>
             </p>
