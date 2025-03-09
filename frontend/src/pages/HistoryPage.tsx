@@ -3,7 +3,6 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import { BASE_URL } from "../api/globalvariables";
 import { useNavigate } from "react-router-dom";
-
 import { downloadFile } from "../api/axios";
 
 
@@ -37,27 +36,13 @@ const HistoryPage: React.FC = () => {
       setLoading(true);
 
       const token = localStorage.getItem("authToken");
-      console.log("Token stored:", token ? token.substring(0, 15) + "..." : "No token");
+     
 
       if (!token) {
         throw new Error("No authentication token found");
       }
 
-      // Test the token validity with the /auth endpoint first
-      try {
-        const authTest = await axios({
-          method: "get",
-          url: `${BASE_URL}/auth`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        console.log("Auth test successful:", authTest.data);
-      } catch (authErr) {
-        console.error("Auth test failed:", authErr);
-        throw new Error("Token validation failed");
-      }
+      
 
       const response = await axios({
         method: "get",
@@ -70,18 +55,9 @@ const HistoryPage: React.FC = () => {
       });
 
       
-      
       setHistory(response.data);
       setError(null);
     } catch (err) {
-      console.error("Detailed error:", err);
-
-      if (axios.isAxiosError(err) && err.response) {
-        console.log("Status:", err.response.status);
-        console.log("Headers:", err.response.headers);
-        console.log("Data:", err.response.data);
-      }
-
       if (err instanceof Error) {
         setError(`Failed to load history: ${err.message}`);
       } else {

@@ -26,13 +26,12 @@ const Login = () => {
         email: email,
         password: password,
       });
-      console.log(response);
       if (response.data.status === 1) {
         // Login successful
         // Store authentication status in localStorage
         localStorage.setItem("authToken", response.data.token);
         localStorage.setItem("isAuthenticated", "true");
-        //config axios to include token in future req
+        
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
         // Redirect to dashboard or home page

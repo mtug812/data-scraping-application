@@ -16,7 +16,7 @@ const LogoutButton = () => {
 
   return (
     <a 
-      href="/login" 
+      
       onClick={handleLogout} 
       className="text-blue-600 hover:text-blue-800 transition-colors px-3 py-2 relative group"
     >

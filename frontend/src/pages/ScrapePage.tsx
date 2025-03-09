@@ -39,13 +39,6 @@ const [companyName, setCompanyName] = useState<string>("");
       setIsLoading(true);
       setError(undefined);
   
-      console.log("Sending to backend:", {
-        url: urlInput,
-        scraping_method: selectedOption,
-        clean_data: cleanData,
-        company_name: companyName,
-      });
-  
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
@@ -68,7 +61,6 @@ const [companyName, setCompanyName] = useState<string>("");
       );
       const response = axiosResponse.data;
       if (response && response.status === 1) {
-        console.log("Scraping successful:", response);
         setIsScrapingDone(true);
         setScrapedPage(response.scrape_result);
         setError(undefined);
@@ -76,9 +68,23 @@ const [companyName, setCompanyName] = useState<string>("");
         setError(response?.error || "An error occurred during scraping");
         setIsScrapingDone(false);
       }
-    } catch (err) {
-      console.error("Error during scraping:", err);
-      setError("Failed to scrape the website. Please try again.");
+    } catch (err)  {
+      
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          
+          setError(`Server error: ${err.response.status}. Please try again.`);
+        } else if (err.request) {
+          
+          setError("No response from server. Please check your connection.");
+        } else {
+          
+          setError("Request configuration error. Please try again.");
+        }
+      } else {
+        
+        setError("Failed to scrape the website. Please try again.");
+      }
       setIsScrapingDone(false);
     } finally {
       setIsLoading(false);
