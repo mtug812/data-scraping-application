@@ -20,7 +20,7 @@ const [cleanData, setCleanData] = useState<boolean>(false);
 const [companyName, setCompanyName] = useState<string>("");
 
   const handlePreview = () => {
-    // Simply show the content we already have without making an API call
+    
     setShowPreview(true);
   };
 
