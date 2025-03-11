@@ -15,10 +15,16 @@ const LogoutButton = () => {
   };
 
   return (
-    <button onClick={handleLogout} className="text-white hover:text-gray-300">
+    <a 
+      
+      onClick={handleLogout} 
+      className="text-blue-600 hover:text-blue-800 transition-colors px-3 py-2 relative group"
+    >
       Logout
-    </button>
+      <span className="absolute bottom-0 left-0 w-0 h-1 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+    </a>
   );
 };
+
 
 export default LogoutButton;

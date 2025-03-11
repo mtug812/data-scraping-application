@@ -1,1 +1,1 @@
-export type RadioOption = "requests" | "bs4" | "scrape3";
+export type RadioOption = "requests" | "bs4" | "selenium";
