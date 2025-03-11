@@ -286,6 +286,7 @@ def history():
     history_list = [
         {
             "url": record.url,
+            "scrape_method": record.scrape_method,
             "scraped_data": record.scraped_data,
             "date": record.date.strftime("%Y-%m-%d %H:%M:%S") if record.date else None,
         }
