@@ -102,7 +102,7 @@ const [companyName, setCompanyName] = useState<string>("");
           <div className="border-t border-blue-400 pt-6 mt-6 w-full">
             <p className="mb-4">Our tool allows you to:</p>
             <ul className="list-disc list-inside space-y-2">
-              <li>Scrape content from static websites</li>
+              <li>Scrape content from static and dynamic websites</li>
               <li>Save results as text files</li>
               <li>View your scraping history</li>
               <li>Choose between different scraping methods</li>
