@@ -1,91 +1,83 @@
-# Web Scraper Application - Frontend Developer Documentation
+# 🎨 Frontend Developer Documentation
 
-## Table of Contents
+## 🚀 Introduction
 
-1. [Introduction](#introduction)
-2. [Project Setup](#project-setup)
-   - [Prerequisites](#prerequisites)
-   - [Installation](#installation)
-   - [Running the Development Server](#running-the-development-server)
-   - [Building for Production](#building-for-production)
-3. [Project Structure](#project-structure)
-4. [Technology Stack](#technology-stack)
-5. [Application Architecture](#application-architecture)
-   - [Routing](#routing)
-   - [State Management](#state-management)
-   - [API Communication](#api-communication)
-6. [Components Overview](#components-overview)
-   - [Pages](#pages)
-   - [Reusable Components](#reusable-components)
-7. [Authentication Flow](#authentication-flow)
-8. [Scraping Functionality](#scraping-functionality)
-9. [Code Conventions](#code-conventions)
-10. [Troubleshooting](#troubleshooting)
+The Web Scraper Application is a **React-based** web interface that enables users to:
 
-## Introduction
+- Extract data from websites using different scraping methods.
 
-The Web Scraper Application is a React-based web interface that allows users to extract data from websites using various scraping methods, view and download the results, and manage their scraping history. The frontend communicates with a Flask-based backend API to perform scraping operations, manage user authentication, and store scraping history.
+- View and download scraped results.
 
-## Project Setup
+- Manage scraping history.
 
-### Prerequisites
+The frontend **communicates** with a Flask-based backend API to:
+- Perform scraping operations.
 
-Before you begin, ensure you have the following installed:
-- Node.js (v16.x or higher)
-- npm (v8.x or higher) or yarn (v1.22.x or higher)
+- Manage user authentication.
 
-### Installation
+- Store scraping history.
 
-1. Clone the repository:
-bash
+---
+
+## 🛠️ Project Setup
+
+### ✅ **Prerequisites**
+Before starting, ensure you have installed:
+- **Node.js** (v16.x or higher)
+- **npm** (v8.x or higher) or **yarn** (v1.22.x or higher)
+
+### 📥 **Installation**
+Follow these steps:
+
+```sh
+# 1️⃣ Clone the repository
 git clone https://github.com/AliRasikh/data-scraping-application.git
 cd data-scraping-application/frontend
+```
 
+# 2️⃣ Install dependencies
+```bash
+npm install   # or yarn install
+```
 
-2. Install dependencies:
-bash
-npm install
-# or
-yarn install
+🔧 Environment Configuration
+Create a .env file in the root of the frontend directory:
 
-
-3. Create a .env file in the root of the frontend directory with the following content:
-
+```bash
 VITE_API_BASE_URL=http://localhost:5000
+```
 
-Replace the URL with your backend server URL if it's different.
+🔹 Replace the URL with your backend server URL if it's different.
 
-### Running the Development Server
+### 🚀Running the Development Server
 
 To start the development server:
 
-bash
-npm run dev
-# or
-yarn dev
-
+```bash
+npm run dev   # or yarn dev
+```
 
 This will start the Vite development server, typically on http://localhost:5173. The application will automatically reload if you make changes to the source files.
 
-### Building for Production
+### 📦 Building for Production
 
 To create a production build:
 
-bash
+```bash
 npm run build
 # or
 yarn build
-
+```
 
 This will generate optimized files in the dist directory. You can preview the production build locally with:
 
-bash
+```bash
 npm run preview
 # or
 yarn preview
+```
 
-
-## Project Structure
+## 🏗️Project Structure
 
 The frontend codebase is organized as follows:
 
@@ -93,9 +85,9 @@ The frontend codebase is organized as follows:
 frontend/
 ├── public/            # Static assets that don't need processing
 ├── src/               # Source code
-│   ├── api/           # API communication PRETTIER
+│   ├── api/           # API communication (Axios requests)
 │   ├── components/    # Reusable UI components
-│   ├── const/         # Constants, types and utils file
+│   ├── const/         # Constants, types, and utility functions
 │   ├── pages/         # Page components
 │   ├── routes/        # Routing configuration
 │   ├── App.tsx        # Main application component
@@ -109,6 +101,12 @@ frontend/
 
 
 ## Technology Stack
+| Step  | Description   |
+|-----------|--------|
+| 1️⃣ Login Process400 | User submits credentials to /login API. |
+| 2️⃣ Token Storage |JWT token is stored in localStorage.|
+| 3️⃣ Authenticated Requests|All protected API requests include Authorization: Bearer <token>.|
+| 4️⃣ Logout Process |Token is removed from storage.|
 
 The frontend is built with the following technologies:
 
@@ -166,7 +164,7 @@ Authentication state is stored in localStorage to persist across page refreshes 
 
 *Example of state management in components:*
 
-typescript
+```typescript
 // Local component state with useState
 const [urlInput, setUrlInput] = useState<string | undefined>(undefined);
 const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -190,19 +188,19 @@ useEffect(() => {
   };
 }, [navigate]); // Dependencies array
 ### API Communication
-
+```
 The application communicates with the backend API using Axios. The API integration is configured in `src/api/axios.ts` and `src/api/globalvariables.ts`.
 
 #### Base URL Configuration
 
-typescript
+```typescript
 // src/api/globalvariables.ts
 export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+```
 
 #### API Requests
 
-typescript
+```typescript
 // src/api/axios.ts
 import axios from "axios";
 
@@ -219,6 +217,7 @@ export const sendAxiosRequest = async (url: string, data: object) => {
     throw error;
   }
 };
+```
 
 // More utility functions for file handling...
 
@@ -260,7 +259,7 @@ Displays the user's scraping history with color-coded visualization of different
 - Download functionality for previously scraped content
 
 **Implementation:**
-typescript
+```typescript
 // Authentication check
 useEffect(() => {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
@@ -281,6 +280,7 @@ const fetchHistory = async () => {
   }
 };
 
+```
 
 #### Login.tsx
 
@@ -293,14 +293,14 @@ Handles user authentication with email and password.
 - Redirection after successful login
 
 **Implementation:**
-typescript
+```typescript
 const signInWithEmail = async () => {
   // Validation
   // API call to backend authentication endpoint
   // Store token and authentication status
   // Redirect to main page
 };
-
+```
 
 #### SignUpPage.tsx
 
@@ -319,7 +319,7 @@ Manages new user registration with form validation.
 Navigation component that appears on all pages, with conditional rendering based on authentication status.
 
 **Implementation:**
-typescript
+```typescript
 // Check authentication status
 useEffect(() => {
   const checkAuth = () => {
@@ -340,7 +340,7 @@ return (
     )}
   </nav>
 );
-
+```
 
 #### LogoutButton.tsx
 
@@ -392,17 +392,17 @@ The application uses JWT-based authentication:
    - Redirect to login page
 
 **Example Authentication Check:**
-typescript
+```typescript
 useEffect(() => {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
   if (!isAuthenticated) {
     navigate("/login");
   }
 }, [navigate]);
-
+```
 
 **Example API Call with Authentication:**
-typescript
+```typescript
 const fetchData = async () => {
   const token = localStorage.getItem("authToken");
   if (!token) throw new Error("No authentication token found");
@@ -418,7 +418,7 @@ const fetchData = async () => {
   
   // Process response...
 };
-
+```
 
 ## Scraping Functionality
 
@@ -446,7 +446,7 @@ The application offers three scraping methods, each with different capabilities:
 4. Results are displayed with options to preview and download
 
 **Implementation:**
-typescript
+```typescript
 const handleScrape = async () => {
   // Validation
   try {
