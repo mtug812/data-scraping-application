@@ -81,13 +81,13 @@ yarn preview
 
 The frontend codebase is organized as follows:
 
-
+```
 frontend/
 ├── public/            # Static assets that don't need processing
 ├── src/               # Source code
-│   ├── api/           # API communication (Axios requests)
+│   ├── api/           # API communication
 │   ├── components/    # Reusable UI components
-│   ├── const/         # Constants, types, and utility functions
+│   ├── const/         # Constants, types and utils file
 │   ├── pages/         # Page components
 │   ├── routes/        # Routing configuration
 │   ├── App.tsx        # Main application component
@@ -98,7 +98,7 @@ frontend/
 ├── tsconfig.json      # TypeScript configuration
 ├── vite.config.ts     # Vite configuration
 └── tailwind.config.js # Tailwind CSS configuration
-
+```
 
 ## Technology Stack
 | Step  | Description   |
