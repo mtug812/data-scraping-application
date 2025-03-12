@@ -123,7 +123,7 @@ The frontend is built with the following technologies:
 
 The application uses React Router v7 for handling client-side routing. The routes are defined in src/routes/AppRoutes.tsx:
 
-typescript
+```typescript
 // src/routes/AppRoutes.tsx
 import { Routes, Route } from "react-router-dom";
 import ScrapePage from "../pages/ScrapePage";
@@ -143,7 +143,7 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
-
+```
 
 ### State Management
 
