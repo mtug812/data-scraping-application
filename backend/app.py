@@ -66,13 +66,6 @@ def token_required(func):
     return decorated
 
 
-# route to test jwt auth
-@app.route("/auth")
-@token_required
-def auth():
-    return "JWT is verified!"
-
-
 # API Routes
 
 

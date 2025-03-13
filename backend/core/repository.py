@@ -10,7 +10,6 @@ from config import db
 from flask_login import login_required
 
 
-@login_required
 def store_user_history(url, scrape_method, scrape_result, current_user_id):
     """
     Stores the user's scraping history in the database.

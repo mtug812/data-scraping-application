@@ -1,7 +1,7 @@
 # 🖥️ Backend Documentation
 
-
 ## 🚀 Overview
+
 The **backend** of the Web Scraping Project is responsible for:
 
 - **Managing web scraping tasks** using Requests, BeautifulSoup or Selenium.
@@ -13,17 +13,19 @@ The **backend** of the Web Scraping Project is responsible for:
 - **Handling database operations** for storing and retrieving scraped data.
 
 ## 📌 Features:
-- ✅ Scrapes static websites using Requests and BeautifulSoup 
+
+- ✅ Scrapes static websites using Requests and BeautifulSoup
 - ✅ Scrapes dynamic websites using Selenium
-- ✅ Clean scraped data  
-- ✅ Preview or save the scraped data as a `.txt` file 
+- ✅ Clean scraped data
+- ✅ Preview or save the scraped data as a `.txt` file
 - ✅ Reliable and secure REST API with JWT Token
 
-
 ## Installation:
+
 This guide will walk you through setting up and running the backend of the project.
 
 ## 1️⃣ Create a Virtual Environment (Recommended)
+
 Using a virtual environment ensures dependencies are managed properly and avoid conflicts.
 
 Run the following command to create one:
@@ -31,57 +33,73 @@ Run the following command to create one:
 ```bash
 python -m venv venv #python3 for Mac/Linux
 ```
+
 Then activate it:
 
 Windows:
+
 ```bash
 venv\Scripts\activate
 ```
+
 Mac/Linux:
+
 ```bash
 source venv/bin/activate
 ```
 
-## 2️⃣  Install the Required Python Version
+## 2️⃣ Install the Required Python Version
 
 Ensure you have the correct Python version installed.
+
 ```bash
 python --version
 ```
 
 ## 3️⃣ Install Dependencies
+
 After activating the virtual environment, install all required dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ## 4️⃣ Code Quality & Standards
+
 To maintain code quality and consistency, install and configure the following tools:
+
 ```bash
 pip install mypy flake8 black pylint
 ```
+
 ## 5️⃣ Navigate to the Backend Directory
+
 Move into the backend project folder:
+
 ```bash
 cd backend
 ```
 
 ## 6️⃣ Run the Backend Server
+
 Start the Flask application:
 
 Windows:
+
 ```bash
 python app.py
 ```
+
 Mac/Linux:
+
 ```bash
 python3 app.py
 ```
 
 ## Code
 
-
 ## 1. app.py (API Endpoints):
+
 ## 🔍 Scrape a Website (`/scrape`)
 
 #### 📍 Overview
@@ -89,29 +107,29 @@ python3 app.py
 This route **scrapes a static website** using **BeautifulSoup** or **Requests** and returns the extracted HTML.
 
 ```
-@app.route("/scrape", methods=["POST"]) 
+@app.route("/scrape", methods=["POST"])
 ```
+
 Defines a route for a specific URL and specifies which HTTP method is allowed
 
 this Function calls the scrapes_with_bs4 or scrapes_with_requests function that scrapes static websites and return the data as HTML
 
-
 #### 📩 Request Parameters
 
- JSON Body (Required Fields)
+JSON Body (Required Fields)
 
-| Parameter        | Type    | Required | Description |
-|-----------------|---------|----------|-------------|
-| `url`           | `string` | ✅ Yes | The URL of the website to scrape. |
-| `scraping_method` | `string` | ✅ Yes | The scraping method: `"requests"`, `"bs4"`, or `"selenium"`. |
-| `clean_data`    | `boolean` | ❌ No (default: `false`) | Whether to clean the scraped data. |
-| `company_name`  | `string` | ✅ Yes (for `"selenium"`) | The name of the company (used for Selenium-based scraping). |
+| Parameter         | Type      | Required                  | Description                                                  |
+| ----------------- | --------- | ------------------------- | ------------------------------------------------------------ |
+| `url`             | `string`  | ✅ Yes                    | The URL of the website to scrape.                            |
+| `scraping_method` | `string`  | ✅ Yes                    | The scraping method: `"requests"`, `"bs4"`, or `"selenium"`. |
+| `clean_data`      | `boolean` | ❌ No (default: `false`)  | Whether to clean the scraped data.                           |
+| `company_name`    | `string`  | ✅ Yes (for `"selenium"`) | The name of the company (used for Selenium-based scraping).  |
 
 Headers (Optional)
 
-| Header | Type | Required | Description |
-|--------|------|----------|-------------|
-| `Authorization` | `string` | ❌ No | JWT token (Required for storing scraping history). |
+| Header          | Type     | Required | Description                                        |
+| --------------- | -------- | -------- | -------------------------------------------------- |
+| `Authorization` | `string` | ❌ No    | JWT token (Required for storing scraping history). |
 
 ---
 
@@ -128,8 +146,6 @@ Headers (Optional)
    - **`selenium`** → `scrape_with_selenium(url, company_name, clean=clean_data)`
 4. **Store Scraping History** (if JWT token is provided).
 5. **Return JSON Response** with the scraped data.
-
-
 
 📌**Response:**
 
@@ -151,22 +167,20 @@ Headers (Optional)
 
 The `/scrape` endpoint may return the following error responses:
 
-| HTTP Status Code | Error Message                         | Description |
-|-----------------|-------------------------------------|-------------|
-| 400            | `"error": "URL is required"`        | The `url` field is missing in the request body. |
-| 400            | `"error": "Scraping method is required"` | The `scraping_method` field is missing in the request body. |
-| 400            | `"error": "Company name is required for Selenium"` | The `company_name` field is required when using `"selenium"` as the `scraping_method`. |
-| 400            | `"error": "Invalid scraping method"` | The provided `scraping_method` is not recognized (must be `"requests"`, `"bs4"`, or `"selenium"`). |
-| 401            | `"error": "Invalid or missing token"` | The request is missing an authorization token or contains an invalid one. |
-| 500            | `"error": "Internal Server Error"`  | An unexpected server error occurred. |
+| HTTP Status Code | Error Message                                      | Description                                                                                        |
+| ---------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 400              | `"error": "URL is required"`                       | The `url` field is missing in the request body.                                                    |
+| 400              | `"error": "Scraping method is required"`           | The `scraping_method` field is missing in the request body.                                        |
+| 400              | `"error": "Company name is required for Selenium"` | The `company_name` field is required when using `"selenium"` as the `scraping_method`.             |
+| 400              | `"error": "Invalid scraping method"`               | The provided `scraping_method` is not recognized (must be `"requests"`, `"bs4"`, or `"selenium"`). |
+| 401              | `"error": "Invalid or missing token"`              | The request is missing an authorization token or contains an invalid one.                          |
+| 500              | `"error": "Internal Server Error"`                 | An unexpected server error occurred.                                                               |
 
 👉 **Note**: Ensure all required fields are provided in the JSON request body to avoid errors.
 
-
-**Why jsonify file ?** 
+**Why jsonify file ?**
 
 It's better to return JSON to the frontend because JSON is lightweight, structured, and universally supported by typeScript
-
 
 ## 🔒 Verify Authentication (`/auth`)
 
@@ -175,9 +189,9 @@ It's better to return JSON to the frontend because JSON is lightweight, structur
 
 #### 🔹 Request Headers
 
-| Header         | Type   | Required | Description |
-|---------------|--------|----------|-------------|
-| Authorization | String | ✅ Yes  | Bearer Token required for authentication. |
+| Header        | Type   | Required | Description                               |
+| ------------- | ------ | -------- | ----------------------------------------- |
+| Authorization | String | ✅ Yes   | Bearer Token required for authentication. |
 
 #### 🔹 Responses
 
@@ -185,8 +199,8 @@ It's better to return JSON to the frontend because JSON is lightweight, structur
 
 ```json
 {
-    "message": "Token is valid",
-    "status": 1
+  "message": "Token is valid",
+  "status": 1
 }
 ```
 
@@ -196,35 +210,39 @@ It's better to return JSON to the frontend because JSON is lightweight, structur
 **Description:** Authenticates a user and returns a JWT token.
 
 #### 🔹 Request Body (JSON)
-| Parameter  | Type   | Required | Description |
-|-----------|--------|----------|-------------|
-| `email`   | String | ✅ Yes  | User email. |
-| `password` | String | ✅ Yes  | User password. |
+
+| Parameter  | Type   | Required | Description    |
+| ---------- | ------ | -------- | -------------- |
+| `email`    | String | ✅ Yes   | User email.    |
+| `password` | String | ✅ Yes   | User password. |
 
 #### 🔹 Example Request
+
 ```json
 {
-    "email": "user@example.com",
-    "password": "password123"
+  "email": "user@example.com",
+  "password": "password123"
 }
 ```
+
 #### 🔹 Responses
 
 ✅ Success (`200 OK`)
 
 ```json
 {
-    "message": "Logged in successfully!",
-    "status": 1,
-    "token": "your_jwt_token"
+  "message": "Logged in successfully!",
+  "status": 1,
+  "token": "your_jwt_token"
 }
 ```
+
 ❌ Errors
 
-| HTTP Code  | Message   |
-|-----------|--------|
-| 400   | "error": "Email does not exist" | 
-| 400 | "error": "Incorrect password, try again" |
+| HTTP Code | Message                                  |
+| --------- | ---------------------------------------- |
+| 400       | "error": "Email does not exist"          |
+| 400       | "error": "Incorrect password, try again" |
 
 ## 🔑 JWT Token Authentication
 
@@ -232,27 +250,27 @@ In this API, JSON Web Tokens (JWT) are used for user authentication and authoriz
 
 **How JWT Works**
 
-1. User Logs In
+1.  User Logs In
 
-    - The user submits their email and password.
+        - The user submits their email and password.
 
-    - If credentials are valid, a JWT is generated:
+        - If credentials are valid, a JWT is generated:
 
-    ```bash
-    token = jwt.encode(
-       {
-          "user": email,  # Store user email in the token
-          "user_id": user.id,  # Store user ID in the token
-          "exp": datetime.utcnow() + timedelta(seconds=1000)  # Expiration time
-       },
-       app.config["SECRET_KEY"],  # Secret key for encoding
-       algorithm="HS256"
-    )
-    ```
-The token is then sent to the client in the response.
+        ```bash
+        token = jwt.encode(
+           {
+              "user": email,  # Store user email in the token
+              "user_id": user.id,  # Store user ID in the token
+              "exp": datetime.utcnow() + timedelta(seconds=1000)  # Expiration time
+           },
+           app.config["SECRET_KEY"],  # Secret key for encoding
+           algorithm="HS256"
+        )
+        ```
 
+    The token is then sent to the client in the response.
 
-2. Client Sends Token in Requests
+2.  Client Sends Token in Requests
 
     - The client includes the token in the Authorization header:
 
@@ -262,7 +280,7 @@ The token is then sent to the client in the response.
 
     - The server verifies the token before allowing access.
 
-3. Server Validates the Token
+3.  Server Validates the Token
 
     - When a request is received, the token is decoded and verified:
 
@@ -283,44 +301,48 @@ Secret Key (SECRET_KEY) is used for signing and verifying the token to prevent t
 Bearer Authentication method is used to send the token securely.
 
 ## 🆕 Sign Up (/sign-up)
+
 **Method**: POST
 **Description**: Registers a new user.
 
-###  🔹 Request Body (JSON)
-| Parameter  | Type   | Required | Description |
-|-----------|--------|----------|-------------|
-| `email`   | String | ✅ Yes  | User email. |
-| `username` | String | ✅ Yes  | User name. |
-| `password`   | String | ✅ Yes  | User password. |
-| `repeat_password` | String | ✅ Yes  | Must match the password. |
+### 🔹 Request Body (JSON)
+
+| Parameter         | Type   | Required | Description              |
+| ----------------- | ------ | -------- | ------------------------ |
+| `email`           | String | ✅ Yes   | User email.              |
+| `username`        | String | ✅ Yes   | User name.               |
+| `password`        | String | ✅ Yes   | User password.           |
+| `repeat_password` | String | ✅ Yes   | Must match the password. |
 
 ### 🔹 Example Request
+
 ```json
 {
-    "email": "newuser@example.com",
-    "userName": "newuser",
-    "password": "password123",
-    "repeat_password": "password123"
+  "email": "newuser@example.com",
+  "userName": "newuser",
+  "password": "password123",
+  "repeat_password": "password123"
 }
 ```
+
 #### 🔹 Responses
 
 ✅ Success Response (201 Created)
 
 ```json
 {
-    "message": "Account created successfully!",
-    "status": 1
+  "message": "Account created successfully!",
+  "status": 1
 }
 ```
 
 ❌ Errors
 
-| HTTP Code  | Message   |
-|-----------|--------|
-| 400   | "error": "Email already exists" | 
-| 400 | "error": "Passwords don't match" |
-| 400 |  "error": "Password must be at least 7 characters"|
+| HTTP Code | Message                                           |
+| --------- | ------------------------------------------------- |
+| 400       | "error": "Email already exists"                   |
+| 400       | "error": "Passwords don't match"                  |
+| 400       | "error": "Password must be at least 7 characters" |
 
 ## 🔐 Password Hashing
 
@@ -337,9 +359,11 @@ hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
 - The hashed password is stored in the database instead of the plain password.
 
 - During login, the entered password is hashed again and compared with the stored hash:
+
 ```bash
 check_password_hash(stored_hashed_password, entered_password)
 ```
+
 - If the hashes match, authentication is successful.
 
 ## 📜 View Scraping History (`/history`)
@@ -349,79 +373,96 @@ check_password_hash(stored_hashed_password, entered_password)
 **Authentication:** ✅ Requires a valid JWT token in the Authorization header.
 
 #### 🔹 Request
+
 Headers:
 
-Header	| Type|	Required |	Description |
-|---------|--------|-------|-------------|
-Authorization|	String|	✅ Yes|	Bearer token for authentication|
+| Header        | Type   | Required | Description                     |
+| ------------- | ------ | -------- | ------------------------------- |
+| Authorization | String | ✅ Yes   | Bearer token for authentication |
 
 #### 🔹 Responses
 
 ✅ Success (`200 OK`)
+
 ```json
 [
-    {
-        "url": "https://example.com",
-        "scraped_data": "<html>...</html>",
-        "date": "2024-03-10 15:30:00"
-    }
+  {
+    "url": "https://example.com",
+    "scraped_data": "<html>...</html>",
+    "date": "2024-03-10 15:30:00"
+  }
 ]
 ```
 
-## 2. scraper.py 
+## 2. scraper.py
 
 ## scrape_with_Requests:
 
-#### **Description:** 
+#### **Description:**
+
 Scrapes a static website and returns extracted text.
 
 #### **Parameters**
-Parameter|	Type|	Required|	Description|
-|-----------|-------|-----|----------------|
-url	|str	|✅	|The URL to scrape|
 
-####   **Request Format**
+| Parameter | Type | Required | Description       |
+| --------- | ---- | -------- | ----------------- |
+| url       | str  | ✅       | The URL to scrape |
+
+#### **Request Format**
+
 Send a **POST request** with a JSON body:
+
 ```json
 {
-    "url": "https://example.com"
+  "url": "https://example.com"
 }
 ```
+
 #### Response Format:
+
 ```
 {
     "html": "<html>...</html>"
 }
 ```
+
 #### **Returns**
+
 - HTML
 
 If an error occurs, returns a JSON object with an error message.
 
 ## scrape_with_bs4:
 
-#### **Description:** 
+#### **Description:**
+
 Uses BeautifulSoup to parse and prettify the HTML content. It can also clean the HTML to return readable text
 
 #### **Parameters**
-Parameter|	Type|	Required|	Description|
-----------|--------|--------|---------|
-url|	str|	✅|	The URL to scrape|
-clean	|bool	|❌|	If True, extracts only readable text|
+
+| Parameter | Type | Required | Description                          |
+| --------- | ---- | -------- | ------------------------------------ |
+| url       | str  | ✅       | The URL to scrape                    |
+| clean     | bool | ❌       | If True, extracts only readable text |
 
 #### **Request Format**
+
 Send a **POST request** with a JSON body:
+
 ```json
 {
-    "url": "https://example.com"
+  "url": "https://example.com"
 }
 ```
+
 #### Response Format:
+
 ```
 {
     "html": "<html>...</html>"
 }
 ```
+
 #### **Returns**
 
 - Prettified HTML if clean=False
@@ -429,17 +470,21 @@ Send a **POST request** with a JSON body:
 - Returns an error message if scraping fails.
 
 ## scrape_with_selenium :
-#### **Description:** 
+
+#### **Description:**
+
 Uses Selenium WebDriver to scrape dynamic web pages that rely on JavaScript execution. It can also clean the HTML to return readable text
 
 #### **Parameters**
-Parameter|	Type|	Required|	Description|
------|---------|--------|----------|
-url|	str	|✅|	The URL of the page to scrape|
-company_name|	str|	✅|	The company name to search for|
-clean	|bool	|❌	|If True, extracts only readable text|
+
+| Parameter    | Type | Required | Description                          |
+| ------------ | ---- | -------- | ------------------------------------ |
+| url          | str  | ✅       | The URL of the page to scrape        |
+| company_name | str  | ✅       | The company name to search for       |
+| clean        | bool | ❌       | If True, extracts only readable text |
 
 #### **Environment Variables**
+
 CHROME_PATH: Path to the Chrome WebDriver executable.
 
 #### **Returns**
@@ -450,56 +495,58 @@ CHROME_PATH: Path to the Chrome WebDriver executable.
 ## 📌 How the Scraper Function Works
 
 #### 1️⃣ Scraping with Requests (`scrape_with_requests`)
-| Step | Description |
-|------|------------|
-| **1️⃣ Send HTTP Request** | The function **sends a request** to the URL using `requests.get(url)`. |
-| **2️⃣ Check Response Status** | If the response **is not `200 OK`**, an error is returned. |
-| **3️⃣ Extract Raw HTML** | The function **retrieves and returns** the raw HTML using `response.text`. |
+
+| Step                         | Description                                                                |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| **1️⃣ Send HTTP Request**     | The function **sends a request** to the URL using `requests.get(url)`.     |
+| **2️⃣ Check Response Status** | If the response **is not `200 OK`**, an error is returned.                 |
+| **3️⃣ Extract Raw HTML**      | The function **retrieves and returns** the raw HTML using `response.text`. |
 
 #### 2️⃣ Scraping with BeautifulSoup (`scrape_with_bs4`)
-| Step | Description |
-|------|------------|
-| **1️⃣ Send HTTP Request** | Requests the webpage's **HTML content** using `requests.get(url)`. |
-| **2️⃣ Check Response Status** | If response **isn’t `200 OK`**, an error is returned. |
-| **3️⃣ Parse HTML** | The function **parses the HTML** with `BeautifulSoup()`. |
+
+| Step                           | Description                                                         |
+| ------------------------------ | ------------------------------------------------------------------- |
+| **1️⃣ Send HTTP Request**       | Requests the webpage's **HTML content** using `requests.get(url)`.  |
+| **2️⃣ Check Response Status**   | If response **isn’t `200 OK`**, an error is returned.               |
+| **3️⃣ Parse HTML**              | The function **parses the HTML** with `BeautifulSoup()`.            |
 | **4️⃣ Clean & Prettify Output** | Returns **cleaned text** or formatted HTML using `soup.prettify()`. |
 
 #### 3️⃣ Scraping with Selenium (`scrape_with_selenium`)
-| Step | Description |
-|------|------------|
-| **1️⃣ Setup Selenium WebDriver** | Configures **Chrome WebDriver** for headless browsing. |
-| **2️⃣ Load Webpage** | Opens the webpage using `driver.get(url)`. |
-| **3️⃣ Handle JavaScript & Dynamic Content** | Waits for JavaScript-rendered elements to load. |
-| **4️⃣ Extract Page Source** | Retrieves **HTML content** using `driver.page_source`. |
-| **5️⃣ Clean & Return Data** | Parses the HTML with `BeautifulSoup` or returns **raw HTML**. |
 
-
+| Step                                       | Description                                                   |
+| ------------------------------------------ | ------------------------------------------------------------- |
+| **1️⃣ Setup Selenium WebDriver**            | Configures **Chrome WebDriver** for headless browsing.        |
+| **2️⃣ Load Webpage**                        | Opens the webpage using `driver.get(url)`.                    |
+| **3️⃣ Handle JavaScript & Dynamic Content** | Waits for JavaScript-rendered elements to load.               |
+| **4️⃣ Extract Page Source**                 | Retrieves **HTML content** using `driver.page_source`.        |
+| **5️⃣ Clean & Return Data**                 | Parses the HTML with `BeautifulSoup` or returns **raw HTML**. |
 
 ## 📌 Error Handling
 
 The scraper function **handles errors** and returns structured JSON responses.
 
-| Error Type       | Status Code       | Example Response                           |
-|-----------------|------------------|-------------------------------------------|
-| **Missing URL**  | `400 Bad Request` | ```json {"error": "URL is required"}``` |
-| **Invalid URL**  | `400 Bad Request` | ```json {"error": "Failed to retrieve content"}``` |
-| **Request Timeout** | `500 Server Error` | ```json {"error": "An error occurred: timeout"}``` |
-| **Parsing Error**      | `500 Server Error`     | ```json {"error": "Failed to parse HTML"}``` |
-| **Selenium WebDriver Error** | `500 Server Error` | ```json {"error": "Selenium WebDriver error"}``` |
+| Error Type                   | Status Code        | Example Response                               |
+| ---------------------------- | ------------------ | ---------------------------------------------- |
+| **Missing URL**              | `400 Bad Request`  | `json {"error": "URL is required"}`            |
+| **Invalid URL**              | `400 Bad Request`  | `json {"error": "Failed to retrieve content"}` |
+| **Request Timeout**          | `500 Server Error` | `json {"error": "An error occurred: timeout"}` |
+| **Parsing Error**            | `500 Server Error` | `json {"error": "Failed to parse HTML"}`       |
+| **Selenium WebDriver Error** | `500 Server Error` | `json {"error": "Selenium WebDriver error"}`   |
 
 ✅ **If an error occurs, the function returns a structured JSON error message instead of crashing.**
 
 ## 📌 Comparison of Scraping Methods
 
-| Method          | Best For                     | Pros                          | Cons                         |
-|----------------|-----------------------------|-------------------------------|------------------------------|
-| **Requests**   | Static websites              | ✅ Fast, ✅ Lightweight        | ❌ No JavaScript support     |
-| **BeautifulSoup** | Cleaning & parsing HTML  | ✅ Easy to use, ✅ Lightweight | ❌ Needs requests first      |
-| **Selenium**   | JavaScript-heavy pages       | ✅ Handles dynamic content    | ❌ Slower, ❌ Requires WebDriver |
+| Method            | Best For                | Pros                           | Cons                             |
+| ----------------- | ----------------------- | ------------------------------ | -------------------------------- |
+| **Requests**      | Static websites         | ✅ Fast, ✅ Lightweight        | ❌ No JavaScript support         |
+| **BeautifulSoup** | Cleaning & parsing HTML | ✅ Easy to use, ✅ Lightweight | ❌ Needs requests first          |
+| **Selenium**      | JavaScript-heavy pages  | ✅ Handles dynamic content     | ❌ Slower, ❌ Requires WebDriver |
 
 ## 3. config.py :
 
 #### 📌 Overview
+
 This module **configures** the Flask application by:
 
 - **Loading environment variables** from a `.env` file.
@@ -511,6 +558,7 @@ This module **configures** the Flask application by:
 - **Managing security settings** with a secret key.
 
 #### 🚀 Flask App Initialization
+
 ```bash
 app = Flask(__name__)  # Create an app instance
 CORS(app)
@@ -524,13 +572,16 @@ CORS(app, supports_credentials=True)
 
 - This module loads sensitive configurations from a .env file using dotenv.
 - The .env file is not included in version control (Git) to protect sensitive information.
+
 ```bash
 load_dotenv()  # Load environment variables from .env
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 ```
+
 - SECRET_KEY → Used for secure sessions and JWT authentication.
 
 ##### 🗄️ Database Configuration
+
 ```bash
 database_uri = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
