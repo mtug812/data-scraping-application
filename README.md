@@ -8,7 +8,7 @@ The **Data Scraping Application** is a collaborative project developed by studen
 
 - **Web Scraping Functionality**: Users can input a URL to scrape data.
 - **Multiple Scraping Options**: Select from various scraping methods to meet your needs.
-- **User-Friendly Interface**: Simple and intuitive front-end built using React.js.
+- **User-Friendly Interface**: Modern and user-friendly front-end built using React.js.
 - **Data Processing**: Possible implementation of language models to summarize and clean scraped data.
 
 - ✅ Scrapes static websites using Requests and BeautifulSoup
