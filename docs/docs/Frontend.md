@@ -4,7 +4,7 @@
 
 The Web Scraper Application is a React-based web interface that allows users to extract data from websites using various scraping methods, view and download the results, and manage their scraping history. The frontend communicates with a Flask-based backend API to perform scraping operations, manage user authentication, and store scraping history.
 
-## Project Setup
+## 🛠️ Project Setup
 
 ### Prerequisites
 
@@ -36,9 +36,11 @@ yarn install
 VITE_API_BASE_URL=http://localhost:5000
 ```
 
-Replace the URL with your backend server URL if it's different.
+````
 
-### Running the Development Server
+🔹 Replace the URL with your backend server URL if it's different.
+
+### 🚀Running the Development Server
 
 To start the development server:
 
@@ -46,19 +48,20 @@ To start the development server:
 npm run dev
 # or
 yarn dev
-```
+````
 
 This will start the Vite development server, typically on http://localhost:5173. The application will automatically reload if you make changes to the source files.
 
-### Building for Production
+### 📦 Building for Production
 
 To create a production build:
 
+````bash
 ```bash
 npm run build
 # or
 yarn build
-```
+````
 
 This will generate optimized files in the `dist` directory. You can preview the production build locally with:
 
@@ -73,25 +76,39 @@ yarn preview
 The frontend codebase is organized as follows:
 
 ```
+
+```
+
 frontend/
-├── public/            # Static assets that don't need processing
-├── src/               # Source code
-│   ├── api/           # API communication
-│   ├── components/    # Reusable UI components
-│   ├── const/         # Constants, types and utils file
-│   ├── pages/         # Page components
-│   ├── routes/        # Routing configuration
-│   ├── App.tsx        # Main application component
-│   └── main.tsx       # Application entry point
-├── .env               # Environment variables
-├── index.html         # HTML template
-├── package.json       # Project dependencies and scripts
-├── tsconfig.json      # TypeScript configuration
-├── vite.config.ts     # Vite configuration
+├── public/ # Static assets that don't need processing
+├── src/ # Source code
+│ ├── api/ # API communication
+│ ├── api/ # API communication
+│ ├── components/ # Reusable UI components
+│ ├── const/ # Constants, types and utils file
+│ ├── pages/ # Page components
+│ ├── routes/ # Routing configuration
+│ ├── App.tsx # Main application component
+│ └── main.tsx # Application entry point
+├── .env # Environment variables
+├── index.html # HTML template
+├── package.json # Project dependencies and scripts
+├── tsconfig.json # TypeScript configuration
+├── vite.config.ts # Vite configuration
 └── tailwind.config.js # Tailwind CSS configuration
+
+```
+
 ```
 
 ## Technology Stack
+
+| Step                      | Description                                                       |
+| ------------------------- | ----------------------------------------------------------------- |
+| 1️⃣ Login Process400       | User submits credentials to /login API.                           |
+| 2️⃣ Token Storage          | JWT token is stored in localStorage.                              |
+| 3️⃣ Authenticated Requests | All protected API requests include Authorization: Bearer <token>. |
+| 4️⃣ Logout Process         | Token is removed from storage.                                    |
 
 The frontend is built with the following technologies:
 
@@ -109,6 +126,7 @@ The frontend is built with the following technologies:
 
 The application uses React Router v7 for handling client-side routing. The routes are defined in `src/routes/AppRoutes.tsx`:
 
+````typescript
 ```typescript
 // src/routes/AppRoutes.tsx
 import { Routes, Route } from "react-router-dom";
@@ -129,7 +147,7 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
-```
+````
 
 **For persistent state across sessions:**
 
@@ -140,6 +158,7 @@ Authentication state is stored in localStorage to persist across page refreshes 
 
 **Example of state management in components:**
 
+````typescript
 ```typescript
 // Local component state with useState
 const [urlInput, setUrlInput] = useState<string | undefined>(undefined);
@@ -163,21 +182,26 @@ useEffect(() => {
     // Cleanup operations if needed
   };
 }, [navigate]); // Dependencies array
-```
+````
 
 ### API Communication
 
+````
 The application communicates with the backend API using Axios. The API integration is configured in `src/api/axios.ts` and `src/api/globalvariables.ts`.
 
 #### Base URL Configuration
 
 ```typescript
+```typescript
 // src/api/globalvariables.ts
 export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-```
+````
+
+````
 
 #### API Requests
 
+```typescript
 ```typescript
 // src/api/axios.ts
 import axios from "axios";
@@ -195,9 +219,11 @@ export const sendAxiosRequest = async (url: string, data: object) => {
     throw error;
   }
 };
+````
 
 // More utility functions for file handling...
-```
+
+````
 
 ## Components Overview
 
@@ -224,7 +250,7 @@ const [cleanData, setCleanData] = useState<boolean>(false);
 const [companyName, setCompanyName] = useState<string>("");
 const [scrapedPage, setScrapedPage] = useState<string | null>(null);
 const [isLoading, setIsLoading] = useState<boolean>(false);
-```
+````
 
 #### HistoryPage.tsx
 
@@ -284,6 +310,8 @@ const signInWithEmail = async () => {
 };
 ```
 
+````
+
 #### SignUpPage.tsx
 
 Manages new user registration with form validation.
@@ -324,7 +352,9 @@ return (
     )}
   </nav>
 );
-```
+````
+
+````
 
 #### LogoutButton.tsx
 
@@ -339,7 +369,7 @@ const handleLogout = () => {
   delete axios.defaults.headers.common["Authorization"];
   navigate("/login");
 };
-```
+````
 
 #### RadioButtonsExample.tsx
 
@@ -390,6 +420,8 @@ useEffect(() => {
 }, [navigate]);
 ```
 
+````
+
 **Example API Call with Authentication:**
 
 ```typescript
@@ -408,7 +440,9 @@ const fetchData = async () => {
 
   // Process response...
 };
-```
+````
+
+````
 
 ## Scraping Functionality
 
@@ -467,7 +501,7 @@ const handleScrape = async () => {
     setIsLoading(false);
   }
 };
-```
+````
 
 ## Code Conventions
 
