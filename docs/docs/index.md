@@ -8,18 +8,25 @@ The **Data Scraping Application** is a collaborative project developed by studen
 
 - **Web Scraping Functionality**: Users can input a URL to scrape data.
 - **Multiple Scraping Options**: Select from various scraping methods to meet your needs.
-- **User-Friendly Interface**: Simple and intuitive front-end built using React.js.
+- **User-Friendly Interface**: Modern and user-friendly front-end built using React.js.
 - **Data Processing**: Possible implementation of language models to summarize and clean scraped data.
+
+- ✅ Scrapes static websites using Requests and BeautifulSoup
+- ✅ Scrapes dynamic websites using Selenium
+- ✅ Option to clean scraped data
+- ✅ Preview or save the scraped data as a `.txt` file
+- ✅ Reliable and secure REST API with JWT Token
 
 ## Tech Stack 🛠️
 
-- **Front-End**: React.js
+- **Front-End**: React.js, Tailwind CSS
 - **Back-End**: Flask, SQLite, SQLAlchemy
-- **Scraping Libraries**: Requests, Beautifulsoup4
+- **Scraping Libraries**: Requests, Beautifulsoup4, Selenium
 
 ## Installation ⚡
 
 To get started with the Data Scraping Application, clone the repository and install the required dependencies.
+To run the frontend and backend locally, please refer to our developer documentation. You can navigate to the relevant pages using the top navbar.
 
 ```bash
 git clone https://github.com/your-username/data-scraping-application.git
@@ -69,4 +76,3 @@ Support for multiple scraping strategies (e.g., BeautifulSoup, Scrapy,Selenium)
     docs/
         index.md  # The documentation homepage.
         ...       # Other markdown pages, images and other files. -->
-

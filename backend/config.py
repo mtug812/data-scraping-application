@@ -15,7 +15,6 @@ Attributes:
 """
 
 import os
-
 from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -24,15 +23,16 @@ from flask_cors import CORS
 
 app = Flask(__name__)  # create an app instance
 CORS(app)
+CORS(app, supports_credentials=True)
 
 # Load environment variables from .env file
 load_dotenv()
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
+
 # Database configuration
 database_uri = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 
 db = SQLAlchemy(app)  # create a database instance
